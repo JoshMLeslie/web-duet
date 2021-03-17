@@ -123,6 +123,10 @@
           }
         }
       }
-    }},
-  "defaultProject": "web-duet"
+    }
+  },
+  "defaultProject": "web-duet",
+  "cli": {
+    "analytics": false
+  }
 }
