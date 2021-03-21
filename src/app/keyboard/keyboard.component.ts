@@ -1,7 +1,8 @@
 import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Subject } from 'rxjs';
 import { filter, tap } from 'rxjs/operators';
-import { KeyboardKeys } from './keyboard';
+import { getTestData } from 'test-data/test-data_perpetuum-mobile';
+import { KeyboardKeyData, KeyboardKeys, KeyboardMapArgs } from './keyboard';
 
 @Component({
   selector: 'app-keyboard',
@@ -11,19 +12,37 @@ import { KeyboardKeys } from './keyboard';
 export class KeyboardComponent implements OnInit, OnDestroy {
 	@Input() keyboardSize = 88;
 
-	keys: KeyboardKeys;
-	inputSubs: {[id: string]: Subject<any>} = {};
+	_keys: KeyboardKeys;
+	setKeys (data) {
+		const keyType = data[0]; // TODO filter by type
+		const keyId = data[1];
+		const keyTone = data[2];
+		this._keys.set(keyId, {
+			id: keyId,
+			tone: keyTone,
+			type: keyType
+		});
+	};
+	get keys() {
+		return this._keys;
+	}
+	inputSubs = new Map<string, Subject<any>>();
 
 	constructor(private cd: ChangeDetectorRef) {}
 
 	ngOnInit() {
 		this.buildKeys();
-		this.startMidi();
+		// this.startMidi();
+
+		// TEST
+		getTestData(1).subscribe(key => {
+			this.setKeys(key);
+		})
 	}
 
 	ngOnDestroy() {
-		Object.keys(this.inputSubs).forEach(key => {
-			this.inputSubs[key].unsubscribe();
+		Array.from(this.inputSubs.values(), val => {
+			val.unsubscribe();
 		})
 	}
 
@@ -38,10 +57,11 @@ export class KeyboardComponent implements OnInit, OnDestroy {
 			// starts at 21 for 88s at least TODO check for smaller boards
 			tempMap.set(i, {
 				id: i,
-				tone: 0
+				tone: 0,
+				type: null
 			})
 		};
-		this.keys = tempMap;
+		this._keys = tempMap;
 	}
 
 	private startMidi(): void {
@@ -60,27 +80,20 @@ export class KeyboardComponent implements OnInit, OnDestroy {
 				Array.from(inputs, (input: any) => {
 					console.log(input)
 
-					this.inputSubs[input.id] = new Subject();
+					this.inputSubs.set(input.id, new Subject());
 					input.onmidimessage = (result: any) => {
-						this.inputSubs[input.id].next({midiId: input.id, data: result.data});
+						this.inputSubs.get(input.id).next({midiId: input.id, data: result.data});
 					}
 				});
 
 				
 				Object.keys(this.inputSubs).forEach(key => {
-					this.inputSubs[key].pipe(
+					this.inputSubs.get(key).pipe(
 						filter(v => !(v.data.length === 1 && (v.data[0] === 248 || v.data[0] === 254))),
 						tap(v => {
 							console.log(v);
-							const keyType = v.data[0]; // TODO filter by type
-							const keyId = v.data[1];
-							const keyTone = v.data[2];
-							this.keys.set(keyId, {
-								id: keyId,
-								tone: keyTone
-							})
+							this.setKeys(v.data);
 							this.cd.detectChanges(); // I think it's gets thrown outside the zone bc of the weird sub stuff
-							console.log(this.keys.get(keyId))
 						})
 					).subscribe();
 				});
