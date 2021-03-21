@@ -3,6 +3,7 @@ import { Subject } from 'rxjs';
 import { filter, tap } from 'rxjs/operators';
 import { getTestData } from 'test-data/test-data_perpetuum-mobile';
 import { KeyboardKeyData, KeyboardKeys, KeyboardMapArgs } from './keyboard';
+import { WB_PATTERN } from './keys-setup';
 
 @Component({
   selector: 'app-keyboard',
@@ -13,14 +14,11 @@ export class KeyboardComponent implements OnInit, OnDestroy {
 	@Input() keyboardSize = 88;
 
 	_keys: KeyboardKeys;
-	setKeys (data) {
-		const keyType = data[0]; // TODO filter by type
-		const keyId = data[1];
-		const keyTone = data[2];
-		this._keys.set(keyId, {
-			id: keyId,
-			tone: keyTone,
-			type: keyType
+	updateTone (data: KeyboardKeyData) {
+		const id = data[1];
+		this._keys.set(id, {
+			...this._keys.get(id),
+			tone: data[2],
 		});
 	};
 	get keys() {
@@ -28,15 +26,16 @@ export class KeyboardComponent implements OnInit, OnDestroy {
 	}
 	inputSubs = new Map<string, Subject<any>>();
 
-	constructor(private cd: ChangeDetectorRef) {}
+	constructor(private cd: ChangeDetectorRef) {
+		this.buildKeys();
+	}
 
 	ngOnInit() {
-		this.buildKeys();
 		// this.startMidi();
 
 		// TEST
 		getTestData(1).subscribe(key => {
-			this.setKeys(key);
+			this.updateTone(key as unknown as KeyboardKeyData);
 		})
 	}
 
@@ -46,19 +45,20 @@ export class KeyboardComponent implements OnInit, OnDestroy {
 		})
 	}
 
-	calcOpacity(tone: number) {
-		return tone / 100;
-	}
 
 	private buildKeys() {
 		const tempMap = new Map() as KeyboardKeys;
 		const base = 21;
-		for (let i = base; i < (this.keyboardSize + base); i++ ) {
-			// starts at 21 for 88s at least TODO check for smaller boards
-			tempMap.set(i, {
-				id: i,
+		// starts at 21 for 88s at least TODO check for smaller boards
+		
+		for (let i = 0; i < this.keyboardSize; i++ ) {
+			const color = WB_PATTERN[i % WB_PATTERN.length];
+			const id = i + base;
+			tempMap.set(id, {
+				id: id,
 				tone: 0,
-				type: null
+				type: null,
+				color
 			})
 		};
 		this._keys = tempMap;
@@ -92,7 +92,7 @@ export class KeyboardComponent implements OnInit, OnDestroy {
 						filter(v => !(v.data.length === 1 && (v.data[0] === 248 || v.data[0] === 254))),
 						tap(v => {
 							console.log(v);
-							this.setKeys(v.data);
+							this.updateTone(v.data);
 							this.cd.detectChanges(); // I think it's gets thrown outside the zone bc of the weird sub stuff
 						})
 					).subscribe();

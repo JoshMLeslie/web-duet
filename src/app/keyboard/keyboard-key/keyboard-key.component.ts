@@ -1,4 +1,5 @@
 import { Component, OnInit, ChangeDetectionStrategy, Input } from '@angular/core';
+import { KeyboardKeyData } from '../keyboard';
 
 @Component({
   selector: 'app-keyboard-key',
@@ -7,8 +8,7 @@ import { Component, OnInit, ChangeDetectionStrategy, Input } from '@angular/core
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class KeyboardKeyComponent implements OnInit {
-	@Input() keyId: number;
-	@Input() keyTone: number;
+	@Input() key: KeyboardKeyData;
 
   constructor() { }
 

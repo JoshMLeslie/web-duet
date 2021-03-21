@@ -1,0 +1,33 @@
+:host {
+	.key-el {
+		width: 1rem;
+		position: relative;
+
+		&_tone {
+			position: absolute;
+			opacity: 0;
+			top: 0;
+			width: 100%;
+			height: 100%;
+		}
+	}
+	.key-el {
+		&_white {
+			height: 100px;
+			background-color: gray;
+
+			&_tone {
+				background-color: blue;
+			}
+		}
+		&_black {
+			height: 75px;
+			color: white;
+			background-color: black;
+
+			&_tone {
+				background-color: white;
+			}
+		}
+	}
+}

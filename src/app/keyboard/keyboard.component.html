@@ -1,6 +1,3 @@
 <div class="key-container">
-	<div class="key-element" *ngFor="let key of keys | keyvalue">
-		<div class="key-element_tone-overlay" [style.opacity]="calcOpacity(key.value.tone)"></div>
-		{{key.value.id}} : {{key.value.tone}}
-	</div>	
+	<app-keyboard-key [key]="keyData.value" *ngFor="let keyData of keys | keyvalue"></app-keyboard-key>	
 </div>

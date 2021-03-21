@@ -1,1 +1,9 @@
-<p>keyboard-key works!</p>
+<div *ngIf="key.color === 'w'" class="key-el key-el_white">
+	<div class="key-el_tone key-el_white_tone" [appKeyOpacity]="key.tone"></div>
+	{{key.id}} : {{key.tone}}
+</div>
+
+<div *ngIf="key.color === 'b'" class="key-el key-el_black">
+	<div class="key-el_tone key-el_black_tone" [appKeyOpacity]="key.tone"></div>
+	{{key.id}} : {{key.tone}}
+</div>
