@@ -1,7 +1,8 @@
+@KEY_WIDTH: 1rem;
+
 :host {
 	.key-el {
-		width: 1rem;
-		position: relative;
+		width: @KEY_WIDTH;
 
 		&_tone {
 			position: absolute;
@@ -9,12 +10,15 @@
 			top: 0;
 			width: 100%;
 			height: 100%;
+			z-index: 3;
 		}
 	}
 	.key-el {
 		&_white {
 			height: 100px;
 			background-color: gray;
+			position: relative;
+			z-index: 1;
 
 			&_tone {
 				background-color: blue;
@@ -24,6 +28,10 @@
 			height: 75px;
 			color: white;
 			background-color: black;
+
+			position: fixed;
+			z-index: 2;
+			transform: translateX(-@KEY_WIDTH / 2);
 
 			&_tone {
 				background-color: white;

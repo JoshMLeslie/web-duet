@@ -6,13 +6,13 @@
 // w b w w b
 // w b w w b
 // w b
-const WB_SUB_PATTERN_ONE: Array<'w' | 'b'> = ['w', 'b'];
-const WB_SUB_PATTERN_TWO: Array<'w' | 'b'> = [
+const WB_SUB_PATTERN_ONE: Array<'white' | 'black'> = ['white', 'black'];
+const WB_SUB_PATTERN_TWO: Array<'white' | 'black'> = [
 	...WB_SUB_PATTERN_ONE,
-	'w',
+	'white',
 	...WB_SUB_PATTERN_ONE
 ];
-export const WB_PATTERN: Array<'w' | 'b'> = [
+export const WB_PATTERN: Array<'white' | 'black'> = [
 	...WB_SUB_PATTERN_TWO,
 	...WB_SUB_PATTERN_TWO,
 	...WB_SUB_PATTERN_ONE

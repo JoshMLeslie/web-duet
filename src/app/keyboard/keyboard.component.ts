@@ -34,9 +34,9 @@ export class KeyboardComponent implements OnInit, OnDestroy {
 		// this.startMidi();
 
 		// TEST
-		getTestData(1).subscribe(key => {
-			this.updateTone(key as unknown as KeyboardKeyData);
-		})
+		// getTestData(1).subscribe(key => {
+		// 	this.updateTone(key as unknown as KeyboardKeyData);
+		// })
 	}
 
 	ngOnDestroy() {
