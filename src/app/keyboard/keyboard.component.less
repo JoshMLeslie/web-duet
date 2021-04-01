@@ -1,12 +1,46 @@
 :host {
-	.key {
+	#keyboard {
+		&-container {
+			display: flex;
+			flex-direction: column;
+			width: fit-content;
+		}
+
+		&-header {
+			height: 75px;
+			background-color: black;
+			display: grid;
+			grid-template-columns: repeat(5, 20%);
+			grid-template-rows: 100%;
+
+			text-align: center;
+			justify-content: center;
+			align-items: center;
+
+			&-3 {
+				grid-column: 3;
+
+				// placeholder content
+				color: white;
+				font-size: 3rem;
+				font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+			}
+		}
+	}
+	#key {
 		&-container {
 			display: flex;
 			flex-direction: row;
+
+			background-color: black;
+
+			border-style: solid;
+			border-color: black;
+			border-width: 0 0.5rem 0.5rem 0.5rem;
 		}
 	}
 
 	app-keyboard-key.white:not(:last-child) {
-		margin-right: 0.125rem;
+		margin-right: 0.25rem;
 	}
 }
