@@ -3,7 +3,8 @@ import { NgModule } from '@angular/core';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { KeyboardModule } from './keyboard/keyboard.module';
+import { KeyboardModule } from './components/keyboard/keyboard.module';
+import { RecorderModule } from './components/recorder/recorder.module';
 
 @NgModule({
   declarations: [
@@ -12,7 +13,8 @@ import { KeyboardModule } from './keyboard/keyboard.module';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    KeyboardModule
+    KeyboardModule,
+    RecorderModule
   ],
   providers: [],
   bootstrap: [AppComponent]
