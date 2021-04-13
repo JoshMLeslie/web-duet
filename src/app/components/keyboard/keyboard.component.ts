@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
-import { MidiMapSubject } from '../models/midi-data';
+import { MidiMapSubject } from '../../models/midi-data';
 import { KeyboardKeyData, KeyboardKeys } from './keyboard';
 import { WB_PATTERN } from './keys-setup';
 

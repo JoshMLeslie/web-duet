@@ -1,7 +1,8 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { Subject } from 'rxjs';
-import { filter } from 'rxjs/operators';
-import { MidiData, MidiMapObject, MidiMapSubject, MidiObject, MidiTimeData } from '../components/models/midi-data';
+import { from, Observable, of, Subject } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { MIDIInputMap } from '../models/midi';
+import { MidiMap, MidiMapSubject, MidiObject, MidiSubject, RawMidiData } from '../models/midi-data';
 
 @Injectable({
   providedIn: 'root'
@@ -12,8 +13,19 @@ export class MidiListenerService implements OnDestroy {
 	// type: 254 => 'active sensing'
 
 	inputSubs: MidiMapSubject;
-	_activeKeys: MidiMapObject = new Map();
-	activeKey$ = new Subject<MidiObject>();
+
+	_activeKeys: MidiMap = new Map();
+	activeKey$: MidiSubject = new Subject();
+	activeInput$: MidiSubject = new Subject();
+
+	get accessStatus(): Observable<PermissionState> {
+		if (!navigator?.permissions?.query) return of('denied');
+		return from(navigator.permissions.query({name: 'midi'}).then(r => r.state));
+	}
+
+	get accessGranted(): Observable<boolean> {
+		return this.accessStatus.pipe(map(v => v === 'granted'));
+	}
 
   constructor() { }
 
@@ -21,52 +33,52 @@ export class MidiListenerService implements OnDestroy {
 		this.inputSubs.forEach(sub => sub.unsubscribe());
 	}
 
+	init() {
+		this.startMidi();
+	}
+
 	private startMidi(): void {
+		if (!(navigator as any).requestMIDIAccess) {
+			console.error('midi access not supported')
+			alert('Browser does not support midi access!');
+			return;
+		}
 		(navigator as any).requestMIDIAccess({ sysex: true }).then(
 			(acc: any) => {
-				// Get lists of available MIDI controllers
-				const inputs = acc.inputs.values();
-				const outputs = acc.outputs.values();
-
-				Array.from(outputs, v => console.log(v));
+				/** Kept for posterity */
+				// const outputs = acc.outputs.values();
+				// Array.from(outputs, v => console.log(v));
 				
-				// pipe midi output into subject(s)
-				Array.from(inputs, (input: any) => {
-					console.log(input)
+				// setup midi input(s) to pipe to active subject
+				Array.from(acc.inputs.values(), (input: MIDIInputMap) => {
+					console.log('midi input:', input)
 
 					this.inputSubs.set(input.id, new Subject());
-					input.onmidimessage = ({data}: {data: MidiData}) => {
-						const clockedData = this.formatRawMidi(data);
-						this.inputSubs.get(input.id).next({midiInputId: input.id, data: clockedData});
+					input.onmidimessage = ({data}: {data: RawMidiData}) => {
+						this.updateActive(input.id, data);
 					}
-				});
-
-				this.inputSubs.forEach(sub => {
-					sub.pipe(filter(v => !this.isMidiClock(v.data))).subscribe();
 				});
 			},
 			(err: any) => console.error(err)
 		);
 	}
 
-	private isMidiClock({type}: MidiTimeData) {
-		return type === 248 || type === 254;
-	}
-
-	private formatRawMidi(midiData: MidiData): MidiTimeData {
-		// assuming an active tone can't change value except to 0
-		const clockedData = this._activeKeys.get(midiData[1])?.data || {
+	private formatRawMidi(midiData: RawMidiData): MidiObject {
+		const data = {
 			type: midiData[0],
 			id: midiData[1],
 			tone: midiData[2]
 		};
-
-		if (clockedData.startTime && midiData[2] === 0) {
-			clockedData.endTime = new Date().toISOString();
-		} else {
-			clockedData.startTime = new Date().toISOString();
+		return data;
+	}
+	private isMidiClock({type}: MidiObject) {
+		return type === 248 || type === 254;
+	}
+	private updateActive(inputId: MIDIInputMap['id'], rawData: RawMidiData) {
+		const data = this.formatRawMidi(rawData);
+		if (this.isMidiClock(data)) {
+			return;
 		}
-
-		return clockedData;
+		this.activeInput$.next({ inputId, data });
 	}
 }

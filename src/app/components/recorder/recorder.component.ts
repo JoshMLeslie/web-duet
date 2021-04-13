@@ -6,13 +6,19 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./recorder.component.less']
 })
 export class RecorderComponent implements OnInit {
+	startTime: ReturnType<Date['getTime']>;
+	endTime: ReturnType<Date['getTime']>;
 
   constructor() { }
 
   ngOnInit(): void {
   }
 
-	record() {
+	startRecording() {
+		this.startTime = new Date().getTime();
+	}
 
+	endRecording() {
+		this.endTime = new Date().getTime();
 	}
 }

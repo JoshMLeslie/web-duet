@@ -1,4 +1,4 @@
-import { MidiObject } from "../models/midi-data";
+import { MidiObject } from "../../models/midi-data";
 
 export interface KeyboardKeyData extends MidiObject {
 	color: 'white' | 'black';
