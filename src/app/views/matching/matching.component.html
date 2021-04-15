@@ -1,0 +1,18 @@
+<div id="join-container">
+	<div>
+		<button id="new-button" mat-raised-button color="primary" (click)="enterRoom()">New Room</button>
+		<mat-card>
+			<mat-card-title>Join</mat-card-title>
+		
+			<mat-card-content>
+				<mat-form-field>
+					<mat-label>{{roomUUID}}</mat-label>
+					<input matInput [formControl]="roomUUIDControl">
+				</mat-form-field>
+				<mat-card-actions align="end">
+					<button mat-raised-button color="primary" (click)="enterRoom()">Enter</button>
+				</mat-card-actions>
+			</mat-card-content>
+		</mat-card>
+	</div>
+</div>

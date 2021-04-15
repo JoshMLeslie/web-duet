@@ -7,7 +7,5 @@ import { WebsocketService } from './services/websocket.service';
 	styleUrls: ['./app.component.less'],
 })
 export class AppComponent {
-	constructor(wss: WebsocketService) {
-		wss.createRoom();
-	}
+	constructor() {}
 }

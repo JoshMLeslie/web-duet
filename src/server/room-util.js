@@ -13,8 +13,16 @@ module.exports.close = (rooms, roomUUID) => {
  */
 module.exports.create = (rooms, roomUUID, uuid) => {
 	if (!rooms.has(roomUUID)) {
-		rooms.set(roomUUID) = new Set([uuid]);
+		rooms.set(roomUUID, new Set([uuid]));
 	}
+};
+
+/**
+ * @param {Map<string, Set<string>>} rooms
+ * @param {string} roomUUID 
+ */
+module.exports.status = (rooms, roomUUID) => {
+	return rooms.has(roomUUID);
 };
 
 /**

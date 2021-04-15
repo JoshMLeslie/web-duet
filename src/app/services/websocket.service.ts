@@ -45,13 +45,26 @@ export class WebsocketService {
 			if (ready) {
 				this.ws.send(data);
 			} else {
-				console.warn('server not started');
+				console.warn('no server connection');
 			}
 		})
 	}
 
 	send(data: WebSocketData) {
 		this.sendData$.next(data);
+	}
+
+	newRoomUUID() {
+		const uuid = uuidV4();
+		return UUIDReadable.short(uuid);
+	}
+
+	status(roomUUID: string) {
+		const roomInteraction: RoomInteraction = {
+			roomAction: ROOM_ACTION.STATUS,
+			roomUUID
+		};
+		this.send(JSON.stringify(roomInteraction));
 	}
 
 	join(roomUUID: string) {
@@ -62,9 +75,8 @@ export class WebsocketService {
 		this.send(JSON.stringify(roomInteraction));
 	}
 
-	createRoom() {
-		const uuid = uuidV4();
-		const roomUUID = UUIDReadable.short(uuid);
+	createRoom(roomUUID?: string) {
+		roomUUID ||= this.newRoomUUID();
 	
 		const roomInteraction: RoomInteraction = {
 			roomAction: ROOM_ACTION.CREATE,

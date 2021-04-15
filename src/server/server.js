@@ -12,16 +12,17 @@ const rooms = new Map();
 
 wss.on('connection', ws => {
 	ws.on('message', message => {
+		console.log('server incoming', message)
 		if (typeof message === 'string') {
 			try {
 				message = JSON.parse(message);
 			} catch {}
 		}
 
-		if (message && message.roomAction && message.roomUUID) {
-			const { roomAction, roomUUID } = message;
+		if (message && message.roomAction) {
+			let { roomAction, roomUUID } = message;
 			RoomUtil[roomAction](rooms, roomUUID, uuid);
-			console.log(rooms);
+			ws.send(roomUUID)
 		} else if (message && (!message.roomAction || !message.roomUUID)) {
 			throw new ReferenceError('Malformed request. Attribute missing');
 		}
