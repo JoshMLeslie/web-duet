@@ -1,4 +1,5 @@
 import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
+import { getTestData } from 'test-data/test-data_perpetuum-mobile';
 import { MidiMapSubject } from '../../models/midi-data';
 import { KeyboardKeyData, KeyboardKeys } from './keyboard';
 import { WB_PATTERN } from './keys-setup';
@@ -32,9 +33,9 @@ export class KeyboardComponent implements OnInit {
 		// this.startMidi();
 
 		// TEST
-		// getTestData(1).subscribe(key => {
-		// 	this.updateTone(key as unknown as KeyboardKeyData);
-		// })
+		getTestData(1).subscribe(key => {
+			this.updateTone(key as unknown as KeyboardKeyData);
+		})
 	}
 
 	private buildKeys() {

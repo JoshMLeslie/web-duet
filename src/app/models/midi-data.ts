@@ -2,8 +2,8 @@ import { Subject } from "rxjs";
 
 export type RawMidiData = [number] | [number, number, number]; //  type, id, tone
 export interface MidiObject {
-	id: number;
-	tone: number;
+	id: number;		// 21 -> 108 for an 88 key setup
+	tone: number; // 0 - 254 (?)
 	type: number;
 }
 
