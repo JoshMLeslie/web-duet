@@ -1,7 +1,13 @@
+import { ThisReceiver } from '@angular/compiler';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Subject } from 'rxjs';
+import { combineLatest, merge, Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { MidiDictDatum } from 'src/app/models/midi-data';
+import { AudioOutputService } from 'src/app/services/audio-output.service';
+import { ComputerKeyboardListeningService } from 'src/app/services/keyboard-binding.service';
+import { MidiListenerService } from 'src/app/services/midi-listener.service';
+import { MidiToSoundService } from 'src/app/services/midi-to-sound.service';
 import { WebsocketService } from 'src/app/services/websocket.service';
 
 @Component({
@@ -13,11 +19,16 @@ export class RoomComponent implements OnInit, OnDestroy {
 	loading = true;
 	roomPath: string;
 
+	midiDataInput$: Observable<MidiDictDatum[]>;
+
 	destroy$ = new Subject();
 
 	constructor(
 		private wss: WebsocketService,
-		private activatedRoute: ActivatedRoute
+		private activatedRoute: ActivatedRoute,
+		private midiListener: MidiListenerService,
+		private keyboardListener: ComputerKeyboardListeningService,
+		private audioService: AudioOutputService
 	) {
 		this.wss.ready$.pipe(takeUntil(this.destroy$)).subscribe(isReady => {
 			if (isReady) {
@@ -37,5 +48,14 @@ export class RoomComponent implements OnInit, OnDestroy {
 
 	init() {
 		this.loading = false;
+		this.midiListener.init();
+		this.keyboardListener.init();
+		merge(
+			this.midiListener.activeInput$,
+			this.keyboardListener.activeInput$
+		).subscribe(v => {
+			console.log(v);
+			this.audioService.handleMidiNote(v.data);
+		});
 	}
 }

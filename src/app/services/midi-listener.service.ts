@@ -1,21 +1,17 @@
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { from, Observable, of, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { MIDIInputMap } from '../models/midi';
-import { MidiMap, MidiMapSubject, MidiObject, MidiSubject, RawMidiData } from '../models/midi-data';
+import { MidiObject, MidiSubject, RawMidiData } from '../models/midi-data';
 
 @Injectable({
   providedIn: 'root'
 })
-export class MidiListenerService implements OnDestroy {
+export class MidiListenerService {
 	// https://www.midi.org/specifications-old/item/table-2-expanded-messages-list-status-bytes
 	// type: 248 => 'timing clock'
 	// type: 254 => 'active sensing'
 
-	inputSubs: MidiMapSubject;
-
-	_activeKeys: MidiMap = new Map();
-	activeKey$: MidiSubject = new Subject();
 	activeInput$: MidiSubject = new Subject();
 
 	get accessStatus(): Observable<PermissionState> {
@@ -28,10 +24,6 @@ export class MidiListenerService implements OnDestroy {
 	}
 
   constructor() { }
-
-	ngOnDestroy() {
-		this.inputSubs.forEach(sub => sub.unsubscribe());
-	}
 
 	init() {
 		this.startMidi();
@@ -53,7 +45,6 @@ export class MidiListenerService implements OnDestroy {
 				Array.from(acc.inputs.values(), (input: MIDIInputMap) => {
 					console.log('midi input:', input)
 
-					this.inputSubs.set(input.id, new Subject());
 					input.onmidimessage = ({data}: {data: RawMidiData}) => {
 						this.updateActive(input.id, data);
 					}
