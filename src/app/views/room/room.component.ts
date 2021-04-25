@@ -54,7 +54,6 @@ export class RoomComponent implements OnInit, OnDestroy {
 			this.midiListener.activeInput$,
 			this.keyboardListener.activeInput$
 		).subscribe(v => {
-			console.log(v);
 			this.audioService.handleMidiNote(v.data);
 		});
 	}

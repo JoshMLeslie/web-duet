@@ -1,45 +1,33 @@
 import { Injectable } from '@angular/core';
+import Note from '../classes/note';
 import { MidiObject } from '../models/midi-data';
-import { MidiToSoundService } from './midi-to-sound.service';
 
 @Injectable({
 	providedIn: 'root'
 })
 export class AudioOutputService {
 	context: AudioContext;
-	oscillator: ReturnType<AudioContext['createOscillator']>;
-	oscillatorStarted = false;
+	notes: {[id: number]: Note} = {};
 
-	constructor(private convert: MidiToSoundService) {
+	constructor() {
 		if (!this.context) {
 			this.context = new AudioContext();
-			this.oscillator = this.context.createOscillator();
-			this.oscillator.connect(this.context.destination);
 		}
 	}
 
 	handleMidiNote(note: MidiObject) {
-		if (note.tone > 0) {
-			this.playMidiNote(note);
-		} else {
-			this.stopMidiNote();
-		}
+		note.tone > 0 ?
+			this.playMidiNote(note) :
+			this.stopMidiNote(note);
 	}
 
-	playMidiNote(note: MidiObject) {
-		this.oscillator.frequency.setTargetAtTime(
-			this.convert.convertMidiToHz(note.id),
-			this.context.currentTime,
-			0
-		);
-		if (this.oscillatorStarted) {
-			this.context.resume();
-		} else {
-			this.oscillator.start(0);
-			this.oscillatorStarted = true;
+	private playMidiNote(note: MidiObject) {
+		if (!this.notes[note.id]) {
+			this.notes[note.id] = new Note(this.context, note);
 		}
+		this.notes[note.id].start(note.tone);
 	}
-	stopMidiNote() {
-		this.context.suspend();
+	private stopMidiNote(note: MidiObject) {
+		this.notes[note.id].stop();
 	}
 }
