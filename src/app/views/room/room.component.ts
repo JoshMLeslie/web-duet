@@ -26,9 +26,6 @@ export class RoomComponent implements OnInit, OnDestroy {
 	constructor(
 		private wss: WebsocketService,
 		private activatedRoute: ActivatedRoute,
-		private midiListener: MidiListenerService,
-		private keyboardListener: ComputerKeyboardListeningService,
-		private audioService: AudioOutputService
 	) {
 		this.wss.ready$.pipe(takeUntil(this.destroy$)).subscribe(isReady => {
 			if (isReady) {
@@ -48,13 +45,5 @@ export class RoomComponent implements OnInit, OnDestroy {
 
 	init() {
 		this.loading = false;
-		this.midiListener.init();
-		this.keyboardListener.init();
-		merge(
-			this.midiListener.activeInput$,
-			this.keyboardListener.activeInput$
-		).subscribe(v => {
-			this.audioService.handleMidiNote(v.data);
-		});
 	}
 }

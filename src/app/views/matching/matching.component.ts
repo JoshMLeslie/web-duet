@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { UserService } from 'src/app/services/user.service';
 import { WebsocketService } from 'src/app/services/websocket.service';
 
 @Component({
@@ -14,7 +15,8 @@ export class MatchingComponent implements OnInit {
 
   constructor(
 		private wss: WebsocketService,
-		private router: Router
+		private router: Router,
+		private us: UserService
 	) { }
 
   ngOnInit(): void {
@@ -25,7 +27,7 @@ export class MatchingComponent implements OnInit {
 		const roomUUID = (
 			this.roomUUIDControl.value || this.roomUUID
 		).replace(/\s/g, '-');
-		this.wss.createRoom(roomUUID);
+		this.wss.createRoom(roomUUID, this.us.getUUID());
 		this.router.navigate([roomUUID]);
 	}
 }

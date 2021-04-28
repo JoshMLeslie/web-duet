@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, combineLatest, Subject } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { v4 as uuidV4 } from 'uuid';
 import * as UUIDReadable from 'uuid-readable';
-import { RoomInteraction, ROOM_ACTION } from '../models/room';
+import { ROOM_ACTION, USER_ACTION, WssResponse, WssRoomRequest, WssUserRequest } from '../models/room';
 
 // future thought - https://stackoverflow.com/questions/40688738/what-is-the-difference-between-sending-json-stringify-objects-and-plain-objects/40690049
 
@@ -14,7 +15,21 @@ type WebSocketData = string | ArrayBufferLike | Blob | ArrayBufferView;
 export class WebsocketService {
 	ready$ = new BehaviorSubject<boolean>(false);
 	sendData$ = new Subject<WebSocketData>();
-	recieveData$ = new Subject();
+	
+	private _recieveData$ = new Subject<WssResponse>();
+	recieveData$ = this._recieveData$.asObservable().pipe(
+		map(res => {
+			if (typeof res === 'string') {
+				try {
+					res = JSON.parse(res);
+				} catch {
+					console.error("couldn't parse incoming data", res);
+					throw new Error("Malformed data")
+				}
+			}
+			return res;
+		})
+	);
 
 	ws: WebSocket;
 	domain = 'localhost';
@@ -32,7 +47,7 @@ export class WebsocketService {
 		}
 		this.ws.onmessage = ({ data }) => {
 			console.log('incoming:', data);
-			this.recieveData$.next(data);
+			this._recieveData$.next(data);
 		}
 		this.ws.onclose = () => {
 			this.ws = null;
@@ -60,28 +75,44 @@ export class WebsocketService {
 	}
 
 	status(roomUUID: string) {
-		const roomInteraction: RoomInteraction = {
-			roomAction: ROOM_ACTION.STATUS,
-			roomUUID
+		const request: WssRoomRequest = {
+			action: ROOM_ACTION.STATUS,
+			requester: 'room',
+			data: {
+				roomUUID
+			}
 		};
-		this.send(JSON.stringify(roomInteraction));
+		this.send(JSON.stringify(request));
 	}
 
 	join(roomUUID: string) {
-		const roomInteraction: RoomInteraction = {
-			roomAction: ROOM_ACTION.JOIN,
-			roomUUID
+		const request: WssRoomRequest = {
+			action: ROOM_ACTION.JOIN,
+			requester: 'room',
+			data: { roomUUID }
 		};
-		this.send(JSON.stringify(roomInteraction));
+		this.send(JSON.stringify(request));
 	}
 
-	createRoom(roomUUID?: string) {
+	createRoom(roomUUID: string = '', userUUID: string) {
 		roomUUID ||= this.newRoomUUID();
 	
-		const roomInteraction: RoomInteraction = {
-			roomAction: ROOM_ACTION.CREATE,
-			roomUUID
+		const request: WssRoomRequest = {
+			action: ROOM_ACTION.CREATE,
+			requester: 'room',
+			data: {
+				roomUUID,
+				userUUID
+			}
 		};
-		this.send(JSON.stringify(roomInteraction));
+		this.send(JSON.stringify(request));
+	}
+
+	getUserID() {
+		const request: WssUserRequest = {
+			action: USER_ACTION.GET_USER_ID,
+			requester: 'user'
+		}
+		this.send(JSON.stringify(request));
 	}
 }
