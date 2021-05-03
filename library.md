@@ -1,3 +1,9 @@
+# Websocket Connection
+## WebRTC + Video Chat
+Good for websocket / data passing stuff
+https://mattbutterfield.com/blog/2021-05-02-adding-video-chat
+
+# Midi / Recorded data to Sound
 ## ToneJs
 https://tonejs.github.io/
 
@@ -17,6 +23,7 @@ https://keithwhor.com/music/
 - https://github.com/1000mileworld/Piano-Keyboard/blob/master/playKeyboard.js
 
 ## Karplus-Strong javascript implementation for realistic audio based on Andre Michelle's work
+I think this is specifically applicable to stringed instruments / guitars
 https://github.com/mrahtz/javascript-karplus-strong/tree/master/karplus-strong
 
 ## MDN WebAudio API
