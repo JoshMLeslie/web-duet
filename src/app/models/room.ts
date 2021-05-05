@@ -2,6 +2,7 @@
 export enum ROOM_ACTION {
 	CLOSE = 'close',
 	CREATE = 'create',
+	ENSURE = 'ensure',
 	JOIN = 'join',
 	LEAVE = 'leave',
 	STATUS = 'status'

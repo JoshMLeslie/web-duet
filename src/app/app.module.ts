@@ -7,6 +7,7 @@ import { KeyboardModule } from './components/keyboard/keyboard.module';
 import { RecorderModule } from './components/recorder/recorder.module';
 import { MatchingModule } from './views/matching/matching.module';
 import { RoomModule } from './views/room/room.module';
+import { NavModule } from './components/nav/nav.module';
 
 @NgModule({
 	declarations: [AppComponent],
@@ -17,7 +18,8 @@ import { RoomModule } from './views/room/room.module';
 		KeyboardModule,
 		RecorderModule,
 		MatchingModule,
-  RoomModule
+		RoomModule,
+		NavModule
 	],
 	providers: [],
 	bootstrap: [AppComponent]

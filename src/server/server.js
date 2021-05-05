@@ -12,7 +12,7 @@ const users = new Map();
 
 wss.on('connection', ws => {
 	ws.on('message', message => {
-		console.log('server - incoming', message)
+		console.log('incoming', message);
 		if (typeof message === 'string') {
 			try {
 				message = JSON.parse(message);
@@ -23,30 +23,30 @@ wss.on('connection', ws => {
 
 		if (message) {
 			const { action, requester, roomUUID } = message;
-			let { userUUID } = message
-			switch(requester) {
+			let { userUUID } = message;
+			let data;
+			switch (requester) {
 				case 'room':
-					const data = RoomUtil[action](rooms, roomUUID);
-					ws.send(JSON.stringify({
-						action,
-						data
-					}));
+					data = RoomUtil[action](rooms, roomUUID, userUUID);
 					break;
 				case 'user':
 					userUUID = userUUID || UUID.v4();
-					switch(action) {
+					switch (action) {
 						case 'getUserId':
 							users.set(userUUID, null);
-							ws.send(JSON.stringify({
-								action,
-								data: userUUID
-							}));
+							data = userUUID;
 							break;
 					}
 					break;
 			}
+			console.log('response', requester, action, data);
+			ws.send(
+				JSON.stringify({
+					action,
+					data
+				})
+			);
 		}
-		
 
 		/** Send to all clients */
 		// wss.clients.forEach(client => {

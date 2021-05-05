@@ -74,7 +74,7 @@ export class WebsocketService {
 		return UUIDReadable.short(uuid);
 	}
 
-	status(roomUUID: string) {
+	roomStatus(roomUUID: string) {
 		const request: WssRoomRequest = {
 			action: ROOM_ACTION.STATUS,
 			requester: 'room',
@@ -99,6 +99,18 @@ export class WebsocketService {
 	
 		const request: WssRoomRequest = {
 			action: ROOM_ACTION.CREATE,
+			requester: 'room',
+			data: {
+				roomUUID,
+				userUUID
+			}
+		};
+		this.send(JSON.stringify(request));
+	}
+
+	ensureRoom(roomUUID: string, userUUID: string) {
+		const request: WssRoomRequest = {
+			action: ROOM_ACTION.ENSURE,
 			requester: 'room',
 			data: {
 				roomUUID,
