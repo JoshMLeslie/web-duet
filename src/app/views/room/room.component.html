@@ -3,3 +3,7 @@
 	<p>room works!</p>
 	You are in: {{roomUUID}}
 </div>
+
+<div>
+	<app-keyboard *ngFor="let user of users" [userUUID]="user"></app-keyboard>
+</div>

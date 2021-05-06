@@ -15,13 +15,13 @@ import { WB_PATTERN } from './keys-setup';
 })
 export class KeyboardComponent implements OnInit {
 	@Input() keyboardSize = 88;
+	@Input() userUUID: string;
 
 	_keys: KeyboardKeys;
-	updateTone (data: KeyboardKeyData) {
-		const id = data[1];
+	updateTone ({id, tone}: KeyboardKeyData) {
 		this._keys.set(id, {
 			...this._keys.get(id),
-			tone: data[2],
+			tone
 		});
 	};
 	get keys() {
@@ -53,6 +53,7 @@ export class KeyboardComponent implements OnInit {
 			this.keyboardListener.activeInput$
 		).subscribe(v => {
 			this.audioService.handleMidiNote(v.data);
+			this.updateTone(v.data);
 		});
 		
 	}

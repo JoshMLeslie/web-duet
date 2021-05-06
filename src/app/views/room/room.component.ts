@@ -14,6 +14,7 @@ import { WebsocketService } from 'src/app/services/websocket.service';
 export class RoomComponent implements OnInit, OnDestroy {
 	loading = true;
 	roomUUID: string;
+	users: string[] = [];
 
 	midiDataInput$: Observable<MidiDictDatum[]>;
 
@@ -26,7 +27,14 @@ export class RoomComponent implements OnInit, OnDestroy {
 	) {
 		this.wss.recieveData$.pipe(takeUntil(this.destroy$)).subscribe(data => {
 			console.log(data);
-		})
+		});
+
+		this.us.uuid$
+			.pipe(
+				takeUntil(this.destroy$),
+				filter(u => !!u)
+			)
+			.subscribe(uuid => this.users.push(uuid));
 	}
 
 	ngOnInit(): void {
@@ -51,5 +59,4 @@ export class RoomComponent implements OnInit, OnDestroy {
 	init() {
 		this.loading = false;
 	}
-
 }

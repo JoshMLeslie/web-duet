@@ -1,6 +1,6 @@
-import { HostListener, Injectable, OnDestroy } from '@angular/core';
-import { BehaviorSubject, fromEvent, merge, of, Subject } from 'rxjs';
-import { filter, map, mergeMap, skipUntil, takeUntil, takeWhile, tap } from 'rxjs/operators';
+import { Injectable, OnDestroy } from '@angular/core';
+import { fromEvent, merge, Subject } from 'rxjs';
+import { filter, takeUntil, tap } from 'rxjs/operators';
 import { MidiSubject } from '../models/midi-data';
 
 const KeyMap = {
@@ -12,8 +12,8 @@ const KeyMap = {
 	y: 69,
 	u: 71,
 	i: 72,
-	o: 73,
-	p: 74
+	o: 74,
+	p: 76
 };
 
 @Injectable({

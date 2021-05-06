@@ -1,6 +1,6 @@
 <div id="keyboard-container">
 	<div id='keyboard-header'>
-		<span id="keyboard-header-3">Web Duet</span>
+		<span id="keyboard-header-3">{{userUUID}}</span>
 	</div>
 	<div id="key-container">
 		<app-keyboard-key [key]="keyData.value" *ngFor="let keyData of keys | keyvalue"></app-keyboard-key>	
