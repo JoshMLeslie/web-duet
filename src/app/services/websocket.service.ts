@@ -74,8 +74,8 @@ export class WebsocketService {
 		};
 
 		this.us.uuid$.pipe(take(2)).subscribe(uuid => {
-			this.room = RoomUtil(this.send, uuid);
-			this.user = UserUtil(this.send, uuid);
+			this.room = RoomUtil(this.send.bind(this), uuid);
+			this.user = UserUtil(this.send.bind(this), uuid);
 		})
 
 		combineLatest([

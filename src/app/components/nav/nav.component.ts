@@ -1,17 +1,19 @@
-import { Component, OnInit } from '@angular/core';
-import { UserService } from 'src/app/services/user.service';
+import { Component } from '@angular/core';
+import { NavigationEnd, Router } from '@angular/router';
+import { filter, map } from 'rxjs/operators';
+import { UserService } from '../../services/user.service';
 
 @Component({
-  selector: 'app-nav',
-  templateUrl: './nav.component.html',
-  styleUrls: ['./nav.component.less']
+	selector: 'app-nav',
+	templateUrl: './nav.component.html',
+	styleUrls: ['./nav.component.less']
 })
-export class NavComponent implements OnInit {
+export class NavComponent {
 	user$ = this.us.uuid$;
+	roomUUID$ = this.router.events.pipe(
+		filter(event => event instanceof NavigationEnd),
+		map(event => (event as NavigationEnd).url.slice(1).replace(/-/g, ' '))
+	);
 
-  constructor(private us: UserService) { }
-
-  ngOnInit(): void {
-  }
-
+	constructor(private us: UserService, private router: Router) {}
 }

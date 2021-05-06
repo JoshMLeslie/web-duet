@@ -1,4 +1,5 @@
 <div id="nav-container">
-	<span id="nav-title" class="title">Web Duet</span>
-	<span id="nav-user">Connected as <br /> {{user$ | async}}</span>
+	<span id="nav-left">Current room: <br /> {{roomUUID$ | async}}</span>
+	<span id="nav-center" class="title">Web Duet</span>
+	<span id="nav-right">Connected as <br /> {{user$ | async}}</span>
 </div>
