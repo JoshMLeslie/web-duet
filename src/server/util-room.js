@@ -1,3 +1,4 @@
+// don't export directly so that it can be self-referenced
 const RoomUtil = {
 	/**
 	 * @param {Map<string, Set<string>>} rooms

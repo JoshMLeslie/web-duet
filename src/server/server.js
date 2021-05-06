@@ -1,8 +1,8 @@
 // AWS WS Article - https://aws.amazon.com/blogs/compute/announcing-websocket-apis-in-amazon-api-gateway/
 
-const UUID = require('uuid');
 const WebSocket = require('ws');
-const { RoomUtil } = require('./room-util');
+const { RoomUtil } = require('./util-room');
+const { UserUtil } = require('./util-user');
 
 const port = 8080;
 const wss = new WebSocket.Server({ port }, () => console.log('server started'));
@@ -33,25 +33,14 @@ wss.on('connection', ws => {
 			switch (requester) {
 				case 'room':
 					resData = RoomUtil[action](rooms, roomUUID, userUUID);
+					console.info('current rooms size:', rooms.size);
 					break;
 				case 'user':
-					userUUID = userUUID || UUID.v4();
-					switch (action) {
-						case 'getId':
-							users.set(userUUID, new Date().toISOString());
-							console.log('added new user:', userUUID);
-							resData = userUUID;
-							break;
-						case 'logout':
-							users.delete(userUUID);
-							console.log('logged out user:', userUUID);
-							resData = true;
-							break;
-					}
-					console.log('current user size:', users.size);
+					resData = UserUtil[action](users, userUUID);
+					console.info('current user size:', users.size);
 					break;
 			}
-			console.log('response', requester, action, resData);
+			console.debug('response', requester, action, resData);
 			ws.send(
 				JSON.stringify({
 					action,
