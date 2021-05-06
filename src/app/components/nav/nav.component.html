@@ -1,6 +1,4 @@
 <div id="nav-container">
-	<ng-container *ngIf="user$ | async as user">
-		<span>Connected as {{user}}</span>
-	</ng-container>
-
+	<span id="nav-title" class="title">Web Duet</span>
+	<span id="nav-user">Connected as <br /> {{user$ | async}}</span>
 </div>

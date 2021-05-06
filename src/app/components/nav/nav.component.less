@@ -1,8 +1,24 @@
 :host {
 	#nav-container {
-		width: 100%;
+		width: calc(100% - 1rem); // for padding + grid. y tho ?
 		height: 48px;
 		padding: 0.5rem;
 		background-color: wheat;
+
+		display: grid;
+		grid-template-rows: 100%;
+		grid-template-columns: 25% 50% 25%;
+	}
+
+	#nav-title {
+		grid-row: 1;
+		grid-column: 2;
+		text-align: center;
+	}
+
+	#nav-user {
+		grid-row: 1;
+		grid-column: 3;
+		text-align: right;
 	}
 }
