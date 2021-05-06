@@ -3,19 +3,30 @@ import { BehaviorSubject, combineLatest, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { v4 as uuidV4 } from 'uuid';
 import * as UUIDReadable from 'uuid-readable';
-import { ROOM_ACTION, USER_ACTION, WssResponse, WssRoomRequest, WssUserRequest } from '../models/room';
+import {
+	ROOM_ACTION,
+	USER_ACTION,
+	WssResponse,
+	WssRoomRequest,
+	WssUserRequest
+} from '../models/room';
+import { UserService } from './user.service';
 
 // future thought - https://stackoverflow.com/questions/40688738/what-is-the-difference-between-sending-json-stringify-objects-and-plain-objects/40690049
 
 type WebSocketData = string | ArrayBufferLike | Blob | ArrayBufferView;
 
 @Injectable({
-  providedIn: 'root'
+	providedIn: 'root'
 })
 export class WebsocketService {
 	ready$ = new BehaviorSubject<boolean>(false);
 	sendData$ = new Subject<WebSocketData>();
-	
+
+	get userUUID() {
+		return this.us.getUUID();
+	}
+
 	private _recieveData$ = new Subject<WssResponse>();
 	recieveData$ = this._recieveData$.asObservable().pipe(
 		map(res => {
@@ -24,7 +35,7 @@ export class WebsocketService {
 					res = JSON.parse(res);
 				} catch {
 					console.error("couldn't parse incoming data", res);
-					throw new Error("Malformed data")
+					throw new Error('Malformed data');
 				}
 			}
 			return res;
@@ -35,7 +46,7 @@ export class WebsocketService {
 	domain = 'localhost';
 	port = '8080';
 
-  constructor() {
+	constructor(private us: UserService) {
 		if (this.ws) {
 			this.ws.close();
 		}
@@ -44,29 +55,27 @@ export class WebsocketService {
 		this.ws.onopen = () => {
 			console.log('client connection opened');
 			this.ready$.next(true);
-		}
-		this.ws.onmessage = ({ data }) => {
+		};
+		this.ws.onmessage = message => {
+			const { data } = message;
 			console.log('incoming:', data);
 			this._recieveData$.next(data);
-		}
+		};
 		this.ws.onclose = () => {
 			this.ws = null;
-		}
+		};
 
-		combineLatest([
-			this.ready$,
-			this.sendData$
-		]).subscribe(([ready, data]) => {
+		combineLatest([this.ready$, this.sendData$]).subscribe(([ready, data]) => {
 			if (ready) {
 				this.ws.send(data);
 			} else {
 				console.warn('no server connection');
 			}
-		})
+		});
 	}
 
-	send(data: WebSocketData) {
-		this.sendData$.next(data);
+	private send(data: Object) {
+		this.sendData$.next(JSON.stringify(data));
 	}
 
 	newRoomUUID() {
@@ -75,56 +84,46 @@ export class WebsocketService {
 	}
 
 	roomStatus(roomUUID: string) {
-		const request: WssRoomRequest = {
-			action: ROOM_ACTION.STATUS,
-			requester: 'room',
-			data: {
+		this.send(
+			WssRoomRequest(ROOM_ACTION.STATUS, {
 				roomUUID
-			}
-		};
-		this.send(JSON.stringify(request));
+			})
+		);
 	}
 
 	join(roomUUID: string) {
-		const request: WssRoomRequest = {
-			action: ROOM_ACTION.JOIN,
-			requester: 'room',
-			data: { roomUUID }
-		};
-		this.send(JSON.stringify(request));
+		this.send(WssRoomRequest(ROOM_ACTION.JOIN, { roomUUID }));
 	}
 
-	createRoom(roomUUID: string = '', userUUID: string) {
-		roomUUID ||= this.newRoomUUID();
-	
-		const request: WssRoomRequest = {
-			action: ROOM_ACTION.CREATE,
-			requester: 'room',
-			data: {
+	createRoom(roomUUID: string = this.newRoomUUID()) {
+		this.send(
+			WssRoomRequest(ROOM_ACTION.CREATE, {
 				roomUUID,
-				userUUID
-			}
-		};
-		this.send(JSON.stringify(request));
+				userUUID: this.userUUID
+			})
+		);
 	}
 
-	ensureRoom(roomUUID: string, userUUID: string) {
-		const request: WssRoomRequest = {
-			action: ROOM_ACTION.ENSURE,
-			requester: 'room',
-			data: {
+	ensureRoom(roomUUID: string) {
+		this.send(
+			WssRoomRequest(ROOM_ACTION.ENSURE, {
 				roomUUID,
-				userUUID
-			}
-		};
-		this.send(JSON.stringify(request));
+				userUUID: this.userUUID
+			})
+		);
+	}
+
+	leaveRoom(roomUUID: string) {
+		this.send(
+			WssRoomRequest(ROOM_ACTION.LEAVE, { roomUUID, userUUID: this.userUUID })
+		);
 	}
 
 	getUserID() {
-		const request: WssUserRequest = {
-			action: USER_ACTION.GET_USER_ID,
-			requester: 'user'
-		}
-		this.send(JSON.stringify(request));
+		this.send(WssUserRequest(USER_ACTION.GET_ID));
+	}
+
+	logout() {
+		this.send(WssUserRequest(USER_ACTION.LOGOUT, { userUUID: this.userUUID }));
 	}
 }

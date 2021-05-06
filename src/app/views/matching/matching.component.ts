@@ -27,7 +27,7 @@ export class MatchingComponent implements OnInit {
 		const roomUUID = (
 			this.roomUUIDControl.value || this.roomUUID
 		).replace(/\s/g, '-');
-		this.wss.createRoom(roomUUID, this.us.getUUID());
+		this.wss.createRoom(roomUUID);
 		this.router.navigate([roomUUID]);
 	}
 }

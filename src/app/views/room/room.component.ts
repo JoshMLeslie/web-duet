@@ -44,7 +44,7 @@ export class RoomComponent implements OnInit, OnDestroy {
 			takeUntil(this.destroy$),
 		).subscribe(([ready, userUUID]) => {
 			if (ready && !!userUUID) {
-				this.wss.ensureRoom(this.roomUUID, userUUID);
+				this.wss.ensureRoom(this.roomUUID);
 				this.init();
 			}
 		});
@@ -53,6 +53,7 @@ export class RoomComponent implements OnInit, OnDestroy {
 	ngOnDestroy() {
 		this.destroy$.next();
 		this.destroy$.complete();
+		this.wss.leaveRoom(this.roomUUID);
 	}
 
 	init() {

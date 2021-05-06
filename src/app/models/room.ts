@@ -9,7 +9,8 @@ export enum ROOM_ACTION {
 }
 
 export enum USER_ACTION {
-	GET_USER_ID = 'getUserId'
+	GET_ID = 'getId',
+	LOGOUT = 'logout'
 }
 
 interface WssBaseRequest <A, R, D = any> {
@@ -25,10 +26,25 @@ interface WssBaseResponse<A, D> {
 	data?: D 
 }
 
-export type WssRoomRequest = WssBaseRequest<ROOM_ACTION, 'room', string>
-export type WssUserRequest = WssBaseRequest<USER_ACTION, 'user', string>
+export type WssRoomRequestT = WssBaseRequest<ROOM_ACTION, 'room', string>
+export type WssUserRequestT = WssBaseRequest<USER_ACTION, 'user', string>
 
 export type WssRoomResponse<D = any> = WssBaseResponse<ROOM_ACTION, D>;
 export type WssUserResponse<D = any> = WssBaseResponse<USER_ACTION, D>;
 
 export type WssResponse<D = any> = WssRoomResponse<D> | WssUserResponse<D>;
+
+export const WssRoomRequest = (action: ROOM_ACTION, data?: WssRoomRequestT['data']): WssRoomRequestT => {
+	return {
+		action,
+		data,
+		requester: 'room'
+	}
+}
+export const WssUserRequest = (action: USER_ACTION, data?: WssUserRequestT['data']): WssUserRequestT => {
+	return {
+		action,
+		data,
+		requester: 'user'
+	}
+}
