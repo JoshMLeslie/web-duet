@@ -1,9 +1,6 @@
-<mat-spinner *ngIf="loading"></mat-spinner>
-<div id="room-container" *ngIf="!loading">
-	<p>room works!</p>
-	You are in: {{roomUUID}}
-</div>
-
-<div>
-	<app-keyboard *ngFor="let user of users" [userUUID]="user"></app-keyboard>
+<div id="room-container">
+	<mat-spinner *ngIf="loading"></mat-spinner>
+	<div id="room-content">
+		<app-keyboard *ngFor="let user of users" [userUUID]="user"></app-keyboard>
+	</div>
 </div>
