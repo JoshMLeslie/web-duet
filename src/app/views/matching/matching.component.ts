@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { UserService } from 'src/app/services/user.service';
-import { WebsocketService } from 'src/app/services/websocket.service';
+import { UserService } from '../../services/user.service';
+import { WebsocketService } from '../../services/websocket.service';
 
 @Component({
   selector: 'app-matching',
@@ -20,14 +20,14 @@ export class MatchingComponent implements OnInit {
 	) { }
 
   ngOnInit(): void {
-		this.roomUUID = this.wss.newRoomUUID();
+		this.roomUUID = this.wss.room.newUUID();
   }
 
 	enterRoom() {
 		const roomUUID = (
 			this.roomUUIDControl.value || this.roomUUID
 		).replace(/\s/g, '-');
-		this.wss.createRoom(roomUUID);
+		this.wss.room.createRoom(roomUUID);
 		this.router.navigate([roomUUID]);
 	}
 }

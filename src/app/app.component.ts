@@ -10,7 +10,7 @@ import { WebsocketService } from './services/websocket.service';
 })
 export class AppComponent {
 	@HostListener('window:unload', ['$event']) unload(event: BeforeUnloadEvent) {
-		this.wss.logout();
+		this.wss.user.logout();
 		event.returnValue = '';
   }
 
@@ -21,6 +21,6 @@ export class AppComponent {
 		this.wss.recieveData$.pipe(
 			filter(res => res.action === USER_ACTION.GET_ID)
 		).subscribe((res) => us.setUUID(res.data));
-		wss.getUserID();
+		wss.user.getUserID();
 	}
 }

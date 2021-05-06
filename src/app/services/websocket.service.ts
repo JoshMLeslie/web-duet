@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, combineLatest, Subject } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, take } from 'rxjs/operators';
 import { v4 as uuidV4 } from 'uuid';
 import * as UUIDReadable from 'uuid-readable';
 import {
@@ -10,6 +10,7 @@ import {
 	WssRoomRequest,
 	WssUserRequest
 } from '../models/room';
+import { RoomUtil, UserUtil } from '../util/websocket.util';
 import { UserService } from './user.service';
 
 // future thought - https://stackoverflow.com/questions/40688738/what-is-the-difference-between-sending-json-stringify-objects-and-plain-objects/40690049
@@ -20,12 +21,11 @@ type WebSocketData = string | ArrayBufferLike | Blob | ArrayBufferView;
 	providedIn: 'root'
 })
 export class WebsocketService {
+	room: ReturnType<typeof RoomUtil>;
+	user: ReturnType<typeof UserUtil>;
+	
 	ready$ = new BehaviorSubject<boolean>(false);
 	sendData$ = new Subject<WebSocketData>();
-
-	get userUUID() {
-		return this.us.getUUID();
-	}
 
 	private _recieveData$ = new Subject<WssResponse>();
 	recieveData$ = this._recieveData$.asObservable().pipe(
@@ -47,6 +47,14 @@ export class WebsocketService {
 	port = '8080';
 
 	constructor(private us: UserService) {
+		this.wsSetup();
+	}
+
+	send(data: Object) {
+		this.sendData$.next(JSON.stringify(data));
+	}
+
+	private wsSetup() {
 		if (this.ws) {
 			this.ws.close();
 		}
@@ -65,65 +73,20 @@ export class WebsocketService {
 			this.ws = null;
 		};
 
-		combineLatest([this.ready$, this.sendData$]).subscribe(([ready, data]) => {
+		this.us.uuid$.pipe(take(2)).subscribe(uuid => {
+			this.room = RoomUtil(this.send, uuid);
+			this.user = UserUtil(this.send, uuid);
+		})
+
+		combineLatest([
+			this.ready$,
+			this.sendData$
+		]).subscribe(([ready, data]) => {
 			if (ready) {
 				this.ws.send(data);
 			} else {
 				console.warn('no server connection');
 			}
 		});
-	}
-
-	private send(data: Object) {
-		this.sendData$.next(JSON.stringify(data));
-	}
-
-	newRoomUUID() {
-		const uuid = uuidV4();
-		return UUIDReadable.short(uuid);
-	}
-
-	roomStatus(roomUUID: string) {
-		this.send(
-			WssRoomRequest(ROOM_ACTION.STATUS, {
-				roomUUID
-			})
-		);
-	}
-
-	join(roomUUID: string) {
-		this.send(WssRoomRequest(ROOM_ACTION.JOIN, { roomUUID }));
-	}
-
-	createRoom(roomUUID: string = this.newRoomUUID()) {
-		this.send(
-			WssRoomRequest(ROOM_ACTION.CREATE, {
-				roomUUID,
-				userUUID: this.userUUID
-			})
-		);
-	}
-
-	ensureRoom(roomUUID: string) {
-		this.send(
-			WssRoomRequest(ROOM_ACTION.ENSURE, {
-				roomUUID,
-				userUUID: this.userUUID
-			})
-		);
-	}
-
-	leaveRoom(roomUUID: string) {
-		this.send(
-			WssRoomRequest(ROOM_ACTION.LEAVE, { roomUUID, userUUID: this.userUUID })
-		);
-	}
-
-	getUserID() {
-		this.send(WssUserRequest(USER_ACTION.GET_ID));
-	}
-
-	logout() {
-		this.send(WssUserRequest(USER_ACTION.LOGOUT, { userUUID: this.userUUID }));
 	}
 }
