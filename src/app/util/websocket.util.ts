@@ -3,7 +3,6 @@ import * as UUIDReadable from 'uuid-readable';
 import {
 	ROOM_ACTION,
 	USER_ACTION,
-	WssResponse,
 	WssRoomRequest,
 	WssUserRequest
 } from '../models/room';
@@ -51,13 +50,13 @@ export const RoomUtil = (send: Function, userUUID: string) => ({
 		send(WssRoomRequest(ROOM_ACTION.LEAVE, { roomUUID, userUUID }));
 	},
 	getUsers: (roomUUID: string) => {
-		send(WssRoomRequest(ROOM_ACTION.GET_USERS, { roomUUID, userUUID }))
+		send(WssRoomRequest(ROOM_ACTION.GET_USERS, { roomUUID, userUUID }));
 	}
 });
 
 export const UserUtil = (send: Function, userUUID: string) => ({
 	getUserID: () => {
-		send(WssUserRequest(USER_ACTION.GET_ID));
+		send(WssUserRequest(USER_ACTION.GET_USER_UUID));
 	},
 	logout: () => {
 		send(WssUserRequest(USER_ACTION.LOGOUT, { userUUID: userUUID }));

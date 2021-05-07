@@ -2,7 +2,10 @@ const UUID = require('uuid');
 
 // don't export directly so that it can be self-referenced
 const UserUtil = {
-	getId: (users, userUUID) => {
+	getUserUUID: (_, __, ws) => {
+		return ws.userUUID;
+	},
+	newUser: (users, userUUID) => {
 		userUUID = userUUID || UUID.v4();
 		users.set(userUUID, new Date().toISOString());
 		console.log('added new user:', userUUID);

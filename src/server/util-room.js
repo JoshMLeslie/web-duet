@@ -43,7 +43,7 @@ const RoomUtil = {
 	ensure: (rooms, roomUUID, userUUID) => {
 		if (rooms.has(roomUUID)) {
 			if (!RoomUtil.hasUser(rooms, roomUUID, userUUID)) {
-				RoomUtil.join(rooms, roomUUID, userUUID);
+				return RoomUtil.join(rooms, roomUUID, userUUID);
 			}
 			return true;
 		}
@@ -61,7 +61,9 @@ const RoomUtil = {
 		if (rooms.has(roomUUID) && rooms.get(roomUUID).size < 2) {
 			console.log('room exists, adding user.');
 			rooms.get(roomUUID).add(userUUID);
+			return 'joined';
 		}
+		return false;
 	},
 
 	/**

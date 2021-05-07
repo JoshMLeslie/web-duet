@@ -18,7 +18,7 @@ export class AppComponent {
 		us: UserService
 	) {
 		this.wss.recieveData$.pipe(
-			filter(res => res.action === USER_ACTION.GET_ID)
+			filter(res => res.action === USER_ACTION.GET_USER_UUID)
 		).subscribe((res) => us.setUUID(res.data));
 		wss.user.getUserID();
 	}

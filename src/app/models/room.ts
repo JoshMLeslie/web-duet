@@ -11,7 +11,7 @@ export enum ROOM_ACTION {
 }
 
 export enum USER_ACTION {
-	GET_ID = 'getId',
+	GET_USER_UUID = 'getUserUUID',
 	LOGOUT = 'logout'
 }
 
