@@ -12,6 +12,10 @@ export class AudioOutputService {
 	constructor() {
 		if (!this.context) {
 			this.context = new AudioContext();
+			if (this.context.state !== 'running') {
+				console.error('could not start audio')
+				console.error('todo: popup to restart')
+			}
 		}
 	}
 

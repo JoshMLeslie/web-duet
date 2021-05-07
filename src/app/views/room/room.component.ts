@@ -32,8 +32,12 @@ export class RoomComponent implements OnInit, OnDestroy {
 		this.wss.recieveData$.pipe(
 			takeUntil(this.destroy$),
 			filter(res => res.action === ROOM_ACTION.USERS)
-		).subscribe(res => {
-			this.users = res.data;
+		).subscribe((res: {data?: string[]}) => {
+			const user = this.us.getUUID();
+			this.users = [
+				...res.data.filter(u => u !== user),
+				user
+			];
 		});
 	}
 
