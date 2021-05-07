@@ -1,8 +1,11 @@
 import { v4 as uuidV4 } from 'uuid';
 import * as UUIDReadable from 'uuid-readable';
+import { MidiObject } from '../models/midi-data';
 import {
+	KEYBOARD_ACTION,
 	ROOM_ACTION,
 	USER_ACTION,
+	WssKeyboardRequest,
 	WssRoomRequest,
 	WssUserRequest
 } from '../models/room';
@@ -72,3 +75,9 @@ export const UserUtil = (send: Function, userUUID: string): {[key in USER_ACTION
 		send(WssUserRequest(USER_ACTION.LOGOUT, { userUUID: userUUID }));
 	}
 });
+
+export const KeyboardUtil = (send: Function, userUUID: string): {[key in KEYBOARD_ACTION]: Function} => ({
+	note: (note: MidiObject) => {
+		send(WssKeyboardRequest(KEYBOARD_ACTION.NOTE, { userUUID, note }))
+	}
+})

@@ -22,8 +22,6 @@ export class RoomComponent implements OnInit, OnDestroy {
 	roomUUID$: Observable<string>;
 	users: string[];
 
-	midiDataInput$: Observable<MidiDictDatum[]>;
-
 	destroy$ = new Subject();
 
 	constructor(

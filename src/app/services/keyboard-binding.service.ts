@@ -26,8 +26,7 @@ export class ComputerKeyboardListeningService implements OnDestroy {
 	// listenToKeyboard$ = new BehaviorSubject(true); // lets user toggle on / off - off by default
 	destroy$ = new Subject();
 
-	constructor() {
-	}
+	constructor() {}
 
 	ngOnDestroy() {
 		this.destroy$.next();
@@ -36,19 +35,23 @@ export class ComputerKeyboardListeningService implements OnDestroy {
 
 	init() {
 		merge(
-			fromEvent<KeyboardEvent>(document, 'keydown'),
+			fromEvent<KeyboardEvent>(document, 'keydown').pipe(
+				filter(event => !event.repeat)
+			),
 			fromEvent<KeyboardEvent>(document, 'keyup')
 		)
 			.pipe(
 				filter(event => KeyMap[event.key]),
-				tap(event => this._activeInput$.next({
-					inputId: 'text-keyboard',
-					data: {
-						id: KeyMap[event.key],
-						tone: event.type === 'keydown' ? 100 : 0, // arbitrary middle-ish
-						type: 144
-					}
-				})),
+				tap(event =>
+					this._activeInput$.next({
+						inputId: 'text-keyboard',
+						data: {
+							id: KeyMap[event.key],
+							tone: event.type === 'keydown' ? 100 : 0, // arbitrary middle-ish
+							type: 144
+						}
+					})
+				),
 				takeUntil(this.destroy$)
 			)
 			.subscribe();

@@ -10,7 +10,7 @@ import {
 	WssRoomRequest,
 	WssUserRequest
 } from '../models/room';
-import { RoomUtil, UserUtil } from '../util/websocket.util';
+import { KeyboardUtil, RoomUtil, UserUtil } from '../util/websocket.util';
 import { UserService } from './user.service';
 
 // future thought - https://stackoverflow.com/questions/40688738/what-is-the-difference-between-sending-json-stringify-objects-and-plain-objects/40690049
@@ -23,6 +23,7 @@ type WebSocketData = string | ArrayBufferLike | Blob | ArrayBufferView;
 export class WebsocketService {
 	room: ReturnType<typeof RoomUtil>;
 	user: ReturnType<typeof UserUtil>;
+	keyboard: ReturnType<typeof KeyboardUtil>;
 	
 	ready$ = new BehaviorSubject<boolean>(false);
 	sendData$ = new Subject<WebSocketData>();
@@ -76,6 +77,7 @@ export class WebsocketService {
 		this.us.uuid$.pipe(take(2)).subscribe(uuid => {
 			this.room = RoomUtil(this.send.bind(this), uuid);
 			this.user = UserUtil(this.send.bind(this), uuid);
+			this.keyboard = KeyboardUtil(this.send.bind(this), uuid);
 		})
 
 		combineLatest([

@@ -1,3 +1,5 @@
+import { MidiObject } from "./midi-data";
+
 // room actions require roomUUID
 export enum ROOM_ACTION {
 	NEW = 'newUUID',
@@ -16,6 +18,10 @@ export enum USER_ACTION {
 	LOGOUT = 'logout'
 }
 
+export enum KEYBOARD_ACTION {
+	NOTE = 'note'
+}
+
 interface WssBaseRequest <A, R, D = any> {
 	action: A;
 	requester: R;
@@ -31,11 +37,13 @@ interface WssBaseResponse<A, D> {
 
 export type WssRoomRequestT = WssBaseRequest<ROOM_ACTION, 'room', string>
 export type WssUserRequestT = WssBaseRequest<USER_ACTION, 'user', string>
+export type WssKeyboardRequestT = WssBaseRequest<KEYBOARD_ACTION, 'keyboard', string | MidiObject>
 
 export type WssRoomResponse<D = any> = WssBaseResponse<ROOM_ACTION, D>;
 export type WssUserResponse<D = any> = WssBaseResponse<USER_ACTION, D>;
+export type WssKeyboardResponse<D = any> = WssBaseResponse<KEYBOARD_ACTION, D>;
 
-export type WssResponse<D = any> = WssRoomResponse<D> | WssUserResponse<D>;
+export type WssResponse<D = any> = WssRoomResponse<D> | WssUserResponse<D> | WssKeyboardResponse<D>;
 
 export const WssRoomRequest = (action: ROOM_ACTION, data?: WssRoomRequestT['data']): WssRoomRequestT => {
 	return {
@@ -49,5 +57,12 @@ export const WssUserRequest = (action: USER_ACTION, data?: WssUserRequestT['data
 		action,
 		data,
 		requester: 'user'
+	}
+}
+export const WssKeyboardRequest = (action: KEYBOARD_ACTION, data?: WssKeyboardRequestT['data']): WssKeyboardRequestT => {
+	return {
+		action,
+		data,
+		requester: 'keyboard'
 	}
 }
