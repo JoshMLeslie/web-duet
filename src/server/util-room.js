@@ -14,7 +14,7 @@ const RoomUtil = {
 	 * @param {string} userUUID
 	 */
 	create: (rooms, roomUUID, userUUID) => {
-		if (!rooms.has(roomUUID)) {
+		if (!!roomUUID && !rooms.has(roomUUID)) {
 			rooms.set(roomUUID, new Set([userUUID]));
 			console.log(
 				'created new room with ID',
@@ -71,6 +71,11 @@ const RoomUtil = {
 	 */
 	leave: (rooms, roomUUID, userUUID) => {
 		const room = rooms.get(roomUUID);
+		if (!room) {
+			console.error('tried to leave non-existent room:', roomUUID)
+			return false;
+		}
+
 		if (room.size === 1) {
 			rooms.delete(roomUUID);
 			console.log('User:', userUUID, 'turned off the lights for:', roomUUID);
@@ -90,6 +95,25 @@ const RoomUtil = {
 	hasUser: (rooms, roomUUID, userUUID) => {
 		try {
 			return !!rooms.get(roomUUID).has(userUUID);
+		} catch (e) {
+			console.error(e);
+			return false;
+		}
+	},
+
+	/**
+	 * @param {Map<string, Set<string>>} rooms
+	 * @param {string} roomUUID
+	 * @param {string} userUUID
+	 * @returns {string[]} users
+	 */
+	getUsers: (rooms, roomUUID, userUUID) => {
+		try {
+			const room = rooms.get(roomUUID);
+			if (room && room.has(userUUID)) {
+				return Array.from(room.values());
+			}
+			return false;
 		} catch (e) {
 			console.error(e);
 			return false;

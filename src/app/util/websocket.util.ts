@@ -49,6 +49,9 @@ export const RoomUtil = (send: Function, userUUID: string) => ({
 
 	leaveRoom: (roomUUID: string) => {
 		send(WssRoomRequest(ROOM_ACTION.LEAVE, { roomUUID, userUUID }));
+	},
+	getUsers: (roomUUID: string) => {
+		send(WssRoomRequest(ROOM_ACTION.GET_USERS, { roomUUID, userUUID }))
 	}
 });
 

@@ -9,9 +9,8 @@ import { WebsocketService } from './services/websocket.service';
 	styleUrls: ['./app.component.less'],
 })
 export class AppComponent {
-	@HostListener('window:unload', ['$event']) unload(event: BeforeUnloadEvent) {
+	@HostListener('window:unload', ['$event']) unload() {
 		this.wss.user.logout();
-		event.returnValue = '';
   }
 
 	constructor(

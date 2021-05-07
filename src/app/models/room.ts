@@ -5,7 +5,9 @@ export enum ROOM_ACTION {
 	ENSURE = 'ensure',
 	JOIN = 'join',
 	LEAVE = 'leave',
-	STATUS = 'status'
+	STATUS = 'status',
+	HAS_USER = 'hasUser',
+	GET_USERS = 'getUsers'
 }
 
 export enum USER_ACTION {

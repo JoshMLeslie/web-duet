@@ -1,8 +1,9 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { combineLatest, Observable, Subject } from 'rxjs';
-import { filter, takeUntil } from 'rxjs/operators';
+import { filter, map, takeUntil } from 'rxjs/operators';
 import { MidiDictDatum } from 'src/app/models/midi-data';
+import { ROOM_ACTION } from 'src/app/models/room';
 import { UserService } from 'src/app/services/user.service';
 import { WebsocketService } from 'src/app/services/websocket.service';
 
@@ -12,9 +13,14 @@ import { WebsocketService } from 'src/app/services/websocket.service';
 	styleUrls: ['./room.component.less']
 })
 export class RoomComponent implements OnInit, OnDestroy {
+	@HostListener('window:unload', ['$event']) unload() {
+		this.wss.room.leaveRoom(this.roomUUID); // for page closing
+	}
+
 	loading = true;
 	roomUUID: string;
-	users: string[] = [];
+	roomUUID$: Observable<string>;
+	users: string[];
 
 	midiDataInput$: Observable<MidiDictDatum[]>;
 
@@ -25,26 +31,24 @@ export class RoomComponent implements OnInit, OnDestroy {
 		private activatedRoute: ActivatedRoute,
 		private us: UserService
 	) {
-		this.wss.recieveData$.pipe(takeUntil(this.destroy$)).subscribe(data => {
-			console.log(data);
+		this.wss.recieveData$.pipe(
+			takeUntil(this.destroy$),
+			filter(res => res.action === ROOM_ACTION.GET_USERS)
+		).subscribe(res => {
+			this.users = res.data;
 		});
-
-		this.us.uuid$
-			.pipe(
-				takeUntil(this.destroy$),
-				filter(u => !!u)
-			)
-			.subscribe(uuid => this.users.push(uuid));
 	}
 
 	ngOnInit(): void {
 		this.roomUUID = this.activatedRoute.snapshot.url[0].path;
 
-		combineLatest([this.wss.ready$, this.us.uuid$])
+		combineLatest([
+			this.wss.ready$,
+			this.us.uuid$,
+		])
 			.pipe(takeUntil(this.destroy$))
 			.subscribe(([ready, userUUID]) => {
 				if (ready && !!userUUID) {
-					this.wss.room.ensureRoom(this.roomUUID);
 					this.init();
 				}
 			});
@@ -53,10 +57,11 @@ export class RoomComponent implements OnInit, OnDestroy {
 	ngOnDestroy() {
 		this.destroy$.next();
 		this.destroy$.complete();
-		this.wss.room.leaveRoom(this.roomUUID);
 	}
 
 	init() {
+		this.wss.room.ensureRoom(this.roomUUID);
+		this.wss.room.getUsers(this.roomUUID);
 		this.loading = false;
 	}
 }
