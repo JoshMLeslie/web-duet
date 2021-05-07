@@ -1,7 +1,7 @@
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { combineLatest, Observable, Subject } from 'rxjs';
-import { filter, takeUntil } from 'rxjs/operators';
+import { filter, takeUntil, tap } from 'rxjs/operators';
 import { MidiDictDatum } from 'src/app/models/midi-data';
 import { ROOM_ACTION } from 'src/app/models/room';
 import { UserService } from 'src/app/services/user.service';
@@ -14,7 +14,7 @@ import { WebsocketService } from 'src/app/services/websocket.service';
 })
 export class RoomComponent implements OnInit, OnDestroy {
 	@HostListener('window:unload', ['$event']) unload() {
-		this.wss.room.leaveRoom(this.roomUUID); // for page closing
+		this.wss.room.leave(this.roomUUID); // for page closing
 	}
 
 	loading = true;
@@ -33,7 +33,7 @@ export class RoomComponent implements OnInit, OnDestroy {
 	) {
 		this.wss.recieveData$.pipe(
 			takeUntil(this.destroy$),
-			filter(res => res.action === ROOM_ACTION.GET_USERS)
+			filter(res => res.action === ROOM_ACTION.USERS)
 		).subscribe(res => {
 			this.users = res.data;
 		});
@@ -60,8 +60,8 @@ export class RoomComponent implements OnInit, OnDestroy {
 	}
 
 	init() {
-		this.wss.room.ensureRoom(this.roomUUID);
-		this.wss.room.getUsers(this.roomUUID);
+		this.wss.room.ensure(this.roomUUID);
+		this.wss.room.users(this.roomUUID);
 		this.loading = false;
 	}
 }

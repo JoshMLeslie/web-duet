@@ -14,21 +14,30 @@ const _roomUtil = {
 	}
 };
 
-export const RoomUtil = (send: Function, userUUID: string) => ({
+export const RoomUtil = (
+	send: Function,
+	userUUID: string
+): { [key in ROOM_ACTION]: Function } => ({
 	newUUID: _roomUtil.newUUID,
-	roomStatus: (roomUUID: string) => {
+	status: (roomUUID: string) => {
 		send(
 			WssRoomRequest(ROOM_ACTION.STATUS, {
 				roomUUID
 			})
 		);
 	},
-
+	hasUser: (roomUUID: string, userUUID: string) => {
+		send(
+			WssRoomRequest(ROOM_ACTION.HAS_USER, {
+				roomUUID,
+				userUUID
+			})
+		);
+	},
 	join: (roomUUID: string) => {
 		send(WssRoomRequest(ROOM_ACTION.JOIN, { roomUUID }));
 	},
-
-	createRoom: (roomUUID: string = _roomUtil.newUUID()) => {
+	create: (roomUUID: string = _roomUtil.newUUID()) => {
 		send(
 			WssRoomRequest(ROOM_ACTION.CREATE, {
 				roomUUID,
@@ -36,8 +45,7 @@ export const RoomUtil = (send: Function, userUUID: string) => ({
 			})
 		);
 	},
-
-	ensureRoom: (roomUUID: string) => {
+	ensure: (roomUUID: string) => {
 		send(
 			WssRoomRequest(ROOM_ACTION.ENSURE, {
 				roomUUID,
@@ -45,17 +53,19 @@ export const RoomUtil = (send: Function, userUUID: string) => ({
 			})
 		);
 	},
-
-	leaveRoom: (roomUUID: string) => {
+	close: (roomUUID: string) => {
+		send(WssRoomRequest(ROOM_ACTION.CLOSE, { roomUUID }));
+	},
+	leave: (roomUUID: string) => {
 		send(WssRoomRequest(ROOM_ACTION.LEAVE, { roomUUID, userUUID }));
 	},
-	getUsers: (roomUUID: string) => {
-		send(WssRoomRequest(ROOM_ACTION.GET_USERS, { roomUUID, userUUID }));
+	users: (roomUUID: string) => {
+		send(WssRoomRequest(ROOM_ACTION.USERS, { roomUUID, userUUID }));
 	}
 });
 
-export const UserUtil = (send: Function, userUUID: string) => ({
-	getUserID: () => {
+export const UserUtil = (send: Function, userUUID: string): {[key in USER_ACTION]: Function} => ({
+	getUserUUID: () => {
 		send(WssUserRequest(USER_ACTION.GET_USER_UUID));
 	},
 	logout: () => {

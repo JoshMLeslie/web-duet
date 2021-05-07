@@ -109,7 +109,7 @@ const RoomUtil = {
 	 * @param {string} userUUID
 	 * @returns {string[]} users
 	 */
-	getUsers: (rooms, roomUUID, userUUID) => {
+	 users: (rooms, roomUUID, userUUID) => {
 		try {
 			const room = rooms.get(roomUUID);
 			if (room && room.has(userUUID)) {

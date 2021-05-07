@@ -20,6 +20,6 @@ export class AppComponent {
 		this.wss.recieveData$.pipe(
 			filter(res => res.action === USER_ACTION.GET_USER_UUID)
 		).subscribe((res) => us.setUUID(res.data));
-		wss.user.getUserID();
+		wss.user.getUserUUID();
 	}
 }

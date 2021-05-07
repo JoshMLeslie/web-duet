@@ -10,6 +10,10 @@ const wss = new WebSocket.Server({ port }, () => console.log('server started'));
 const rooms = new Map();
 const users = new Map();
 
+const send = (ws, payload) => {
+	ws.send(JSON.stringify(payload))
+}
+
 wss.on('connection', ws => {
 	ws.userUUID = UserUtil.newUser(users);
 	ws.on('message', message => {
@@ -34,17 +38,18 @@ wss.on('connection', ws => {
 			switch (requester) {
 				case 'room':
 					resData = RoomUtil[action](rooms, roomUUID, userUUID);
+
 					if (resData === 'joined') {
 						wss.clients.forEach(client => {
 							if (client !== ws && client.readyState === WebSocket.OPEN) {
 								// TODO make a seperate thing like "updatingRoomUsers" or something
-								console.log('notifing of new users')
+								console.log('notifing', client.userUUID, 'of new users')
 
 								// TODO doesn't actually update existing users
-								ws.send(JSON.stringify({
-									action: 'getUsers',
-									data: RoomUtil['getUsers'](rooms, roomUUID, userUUID)
-								}))
+								send(client, {
+									action: 'users',
+									data: RoomUtil['users'](rooms, roomUUID, userUUID)
+								})
 							}
 						});
 						return;
@@ -58,11 +63,10 @@ wss.on('connection', ws => {
 					break;
 			}
 			console.debug('response', requester, action, resData);
-			ws.send(
-				JSON.stringify({
+				send(ws, {
 					action,
 					data: resData
-				})
+				}
 			);
 		}
 	});

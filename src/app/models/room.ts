@@ -1,5 +1,6 @@
 // room actions require roomUUID
 export enum ROOM_ACTION {
+	NEW = 'newUUID',
 	CLOSE = 'close',
 	CREATE = 'create',
 	ENSURE = 'ensure',
@@ -7,7 +8,7 @@ export enum ROOM_ACTION {
 	LEAVE = 'leave',
 	STATUS = 'status',
 	HAS_USER = 'hasUser',
-	GET_USERS = 'getUsers'
+	USERS = 'users',
 }
 
 export enum USER_ACTION {
