@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import Note from '../classes/note';
+import { SimpleDialogComponent } from '../components/simple-dialog/simple-dialog.component';
 import { MidiObject } from '../models/midi-data';
 
 @Injectable({
@@ -7,22 +9,42 @@ import { MidiObject } from '../models/midi-data';
 })
 export class AudioOutputService {
 	context: AudioContext;
-	notes: {[id: number]: Note} = {};
+	notes: { [id: number]: Note } = {};
 
-	constructor() {
-		if (!this.context) {
-			this.context = new AudioContext();
-			if (this.context.state !== 'running') {
-				console.error('could not start audio')
-				console.error('todo: popup to restart')
-			}
+	constructor(private dialog: MatDialog) {
+		this.startAudioContext();
+		if (this.context.state !== 'running') {
+			console.error('could not start audio');
+			const diag = this.dialog.open(SimpleDialogComponent, {
+				data: {
+					title: 'Could not start audio output',
+					body: 'Would you like to try to reconnect the audio?',
+					buttons: [
+						{
+							text: 'Retry',
+							onClose: true
+						}
+					]
+				}
+			});
+			diag.afterClosed().subscribe(res => {
+				if (res) {
+					this.startAudioContext();
+				}
+			});
 		}
 	}
 
 	handleMidiNote(note: MidiObject) {
-		note.tone > 0 ?
-			this.playMidiNote(note) :
-			this.stopMidiNote(note);
+		note.tone > 0 ? this.playMidiNote(note) : this.stopMidiNote(note);
+	}
+
+	startAudioContext() {
+		this.context = new AudioContext();
+
+		if (this.context.state === 'running') {
+			console.info('audio started')
+		}
 	}
 
 	private playMidiNote(note: MidiObject) {

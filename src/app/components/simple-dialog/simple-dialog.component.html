@@ -1,0 +1,6 @@
+<h2 mat-dialog-title>{{data.title}}</h2>
+<mat-dialog-content>{{data.body}}</mat-dialog-content>
+<mat-dialog-actions align="end">
+	<button mat-button mat-dialog-close tabindex="0">Close</button>
+	<button mat-button *ngFor="let button of data.buttons" [mat-dialog-close]="button.onClose">{{button.text}}</button>
+</mat-dialog-actions>
