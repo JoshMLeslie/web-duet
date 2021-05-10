@@ -81,11 +81,12 @@ const RoomUtil = {
 		if (room.size === 1) {
 			rooms.delete(roomUUID);
 			console.log('User:', userUUID, 'turned off the lights for:', roomUUID);
+			return 'closed'
 		} else {
 			room.delete(userUUID);
 			console.log('user:', userUUID, 'has left room:', roomUUID);
+			return 'departed';
 		}
-		return true;
 	},
 
 	/**

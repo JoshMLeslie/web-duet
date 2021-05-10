@@ -21,6 +21,7 @@ RUN ["npm", "run", "build:prod:docker"]
 
 
 RUN ["sh", "-c", "mv ./build/* ./"]
+RUN ["sh", "-c", "mv ./src/server ./server"]
 
 # cleanup
 RUN ["rm", "-rf", "src", "angular.json", "tsconfig.json"]
@@ -29,4 +30,4 @@ RUN ["rm", "-rf", "src", "angular.json", "tsconfig.json"]
 EXPOSE 8080
 
 # run ng serve on localhost
-CMD npm run prod
+CMD npm run prod:docker
