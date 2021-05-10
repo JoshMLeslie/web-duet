@@ -6,15 +6,18 @@
     "ng": "ng",
     "start": "ng serve",
     "server": "node src/server/server.js",
+		"prod:docker": "node server.js",
     "hot-server": "nodemon src/server/server.js",
     "build": "ng build",
+    "build:prod": "ng build --prod",
+		"build:prod:docker": "ng build --prod --output-path ./build",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
     "deploy": "ng build --prod && gcloud app deploy"
   },
   "engines": {
-    "node": "14.x.x"
+    "node": "15.x.x"
   },
   "private": true,
   "dependencies": {

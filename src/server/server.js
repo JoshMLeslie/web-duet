@@ -1,9 +1,10 @@
 'use strict';
 // External Libs
 require('dotenv').config();
-const fs = require("fs");
-const Https = require('https')
-const WebSocket = require('ws');
+const express = require('express'),
+	WebSocket = require('ws'),
+	path = require('path'),
+
 
 // Local Libs 
 const { RoomUtil } = require('./util-room');
@@ -16,12 +17,15 @@ let wss;
 if (process.env.LOCAL) {
 	wss = new WebSocket.Server({port}, () => console.info('server started'));
 } else {
-	const server = HttpsServer({
-		key: fs.readFileSync('server.key'),
-		cert: fs.readFileSync('server.crt')
+	const server = express();
+	server.enable('trust proxy');
+	wss = new WebSocket.Server({ server });
+	
+	server.use(express.static(path.resolve(__dirname, '../public')));
+	server.get('/*', (req, res) => {
+		res.sendFile(path.resolve(__dirname, '../public/index.html'));
 	})
 
-	wss = new WebSocket.Server({ server });
 	server.listen(port);
 }
 

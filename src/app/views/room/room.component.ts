@@ -1,11 +1,10 @@
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { combineLatest, Observable, Subject } from 'rxjs';
-import { filter, takeUntil, tap } from 'rxjs/operators';
-import { MidiDictDatum } from 'src/app/models/midi-data';
-import { ROOM_ACTION } from 'src/app/models/room';
-import { UserService } from 'src/app/services/user.service';
-import { WebsocketService } from 'src/app/services/websocket.service';
+import { filter, takeUntil } from 'rxjs/operators';
+import { ROOM_ACTION } from '../../models/room';
+import { UserService } from '../../services/user.service';
+import { WebsocketService } from '../../services/websocket.service';
 
 @Component({
 	selector: 'app-room',
