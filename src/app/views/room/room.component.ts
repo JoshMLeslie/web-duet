@@ -34,10 +34,13 @@ export class RoomComponent implements OnInit, OnDestroy {
 			filter(res => res.action === ROOM_ACTION.USERS)
 		).subscribe((res: {data?: string[]}) => {
 			const user = this.us.getUUID();
-			this.users = [
-				...res.data.filter(u => u !== user),
-				user
-			];
+			console.log(res)
+			if (res.data) {
+				this.users = [
+					...res.data.filter(u => u !== user),
+					user
+				];
+			}
 		});
 	}
 

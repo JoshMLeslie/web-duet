@@ -10,18 +10,15 @@ import {
 	WssUserRequest
 } from '../models/room';
 
-const _roomUtil = {
-	newUUID: () => {
-		const uuid = uuidV4();
-		return UUIDReadable.short(uuid);
-	}
-};
+export const MiscUtil = {
+	newShortUUID: (uuid?: string) => UUIDReadable.short(uuid || uuidV4())
+}
 
 export const RoomUtil = (
 	send: Function,
 	userUUID: string
 ): { [key in ROOM_ACTION]: Function } => ({
-	newUUID: _roomUtil.newUUID,
+	newUUID: MiscUtil.newShortUUID,
 	status: (roomUUID: string) => {
 		send(
 			WssRoomRequest(ROOM_ACTION.STATUS, {
@@ -40,7 +37,7 @@ export const RoomUtil = (
 	join: (roomUUID: string) => {
 		send(WssRoomRequest(ROOM_ACTION.JOIN, { roomUUID }));
 	},
-	create: (roomUUID: string = _roomUtil.newUUID()) => {
+	create: (roomUUID: string = MiscUtil.newShortUUID()) => {
 		send(
 			WssRoomRequest(ROOM_ACTION.CREATE, {
 				roomUUID,
