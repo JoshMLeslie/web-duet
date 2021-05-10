@@ -3,6 +3,9 @@
 Good for websocket / data passing stuff
 https://mattbutterfield.com/blog/2021-05-02-adding-video-chat
 
+## AWS WS stuff
+AWS WS Article - https://aws.amazon.com/blogs/compute/announcing-websocket-apis-in-amazon-api-gateway/
+
 # Midi / Recorded data to Sound
 ## ToneJs
 https://tonejs.github.io/

@@ -1,0 +1,8 @@
+runtime: nodejs14
+
+handlers:
+- url: /
+  static_files: dist/web-duet/index.html
+  upload: dist/web-duet/index.html
+- url: /
+  static_dir: dist/web-duet

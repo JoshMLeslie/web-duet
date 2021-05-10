@@ -1,15 +1,35 @@
-// AWS WS Article - https://aws.amazon.com/blogs/compute/announcing-websocket-apis-in-amazon-api-gateway/
-
+'use strict';
+// External Libs
+require('dotenv').config();
+const fs = require("fs");
+const Https = require('https')
 const WebSocket = require('ws');
+
+// Local Libs 
 const { RoomUtil } = require('./util-room');
 const { UserUtil } = require('./util-user');
 
-const port = 8080;
-const wss = new WebSocket.Server({ port }, () => console.log('server started'));
+// Server config
+const port = process.env.PORT || 8080;
+let wss;
 
+if (process.env.LOCAL) {
+	wss = new WebSocket.Server({port}, () => console.info('server started'));
+} else {
+	const server = HttpsServer({
+		key: fs.readFileSync('server.key'),
+		cert: fs.readFileSync('server.crt')
+	})
+
+	wss = new WebSocket.Server({ server });
+	server.listen(port);
+}
+
+// Local config
 const rooms = new Map();
 const users = new Map();
 
+// ws utils
 const send = (ws, payload) => {
 	ws.send(JSON.stringify(payload))
 }
@@ -24,6 +44,7 @@ const sendOthers = (ws, sendData, log = 'update') => {
 	return;
 }
 
+// WS main
 wss.on('connection', ws => {
 	ws.userUUID = UserUtil.newUser(users);
 	ws.on('message', message => {
@@ -86,4 +107,6 @@ wss.on('connection', ws => {
 			});
 		}
 	});
+	console.log('todo - user cleanup on DC')
+	ws.on('close', () => console.info(ws.userUUID, 'disconnected', '\n---\n'))
 });

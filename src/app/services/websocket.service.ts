@@ -1,15 +1,8 @@
-import { Injectable } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { Inject, Injectable } from '@angular/core';
 import { BehaviorSubject, combineLatest, Subject } from 'rxjs';
 import { map, take } from 'rxjs/operators';
-import { v4 as uuidV4 } from 'uuid';
-import * as UUIDReadable from 'uuid-readable';
-import {
-	ROOM_ACTION,
-	USER_ACTION,
-	WssResponse,
-	WssRoomRequest,
-	WssUserRequest
-} from '../models/room';
+import { WssResponse } from '../models/room';
 import { KeyboardUtil, RoomUtil, UserUtil } from '../util/websocket.util';
 import { UserService } from './user.service';
 
@@ -44,10 +37,14 @@ export class WebsocketService {
 	);
 
 	ws: WebSocket;
-	domain = 'localhost';
+	host = this.doc.location.hostname;
+	local = !this.host.includes('localhost');
 	port = '8080';
 
-	constructor(private us: UserService) {
+	constructor(
+		private us: UserService,
+		@Inject(DOCUMENT) private doc: Document
+	) {
 		this.wsSetup();
 	}
 
@@ -60,7 +57,8 @@ export class WebsocketService {
 			this.ws.close();
 		}
 
-		this.ws = new WebSocket('ws://' + this.domain + ':' + this.port);
+		const websocketUrl = (this.local ? 'wss://' : 'ws://') + this.host + ':' + this.port;
+		this.ws = new WebSocket(websocketUrl);
 		this.ws.onopen = () => {
 			console.log('client connection opened');
 			this.ready$.next(true);
