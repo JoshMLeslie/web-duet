@@ -8,23 +8,25 @@ RUN ["npm", "install", "-g", "@angular/cli"]
 WORKDIR /web-duet
 
 ADD src src
-ADD .env .
+ADD .npmignore .
 ADD angular.json .
 ADD tsconfig.json .
 ADD tsconfig.app.json .
 ADD package.json .
-ADD package-lock.json .
 
 # install dependencies
 RUN ["npm", "install", "--no-audit"]
 RUN ["npm", "run", "build:prod:docker"]
 
+RUN ["ls", "-la"]
 
 RUN ["sh", "-c", "mv ./build/* ./"]
 RUN ["sh", "-c", "mv ./src/server ./server"]
 
+RUN ["ls", "-la"]
+
 # cleanup
-RUN ["rm", "-rf", "src", "angular.json", "tsconfig.json"]
+RUN ["rm", "-rf", "src", "angular.json", "tsconfig.json", "build", ".npmignore"]
 
 # expose port(s)
 EXPOSE 8080

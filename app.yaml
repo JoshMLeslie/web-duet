@@ -3,13 +3,13 @@ env: flex
 
 handlers:
 - url: /
-  static_dir: build
+  static_dir: /web-duet
 - url: /
-  static_files: build/index.html
-  upload: build/index.html
+  static_files: /web-duet/index.html
+  upload: /web-duet/index.html
 - url: /.*
-  static_files: build/index.html
-  upload: build/index.html
+  static_files: /web-duet/index.html
+  upload: /web-duet/index.html
 
 # This sample incurs costs to run on the App Engine flexible environment.
 # The settings below are to reduce costs during testing and are not appropriate
