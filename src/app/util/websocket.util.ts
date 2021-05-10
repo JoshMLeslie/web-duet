@@ -68,8 +68,11 @@ export const UserUtil = (send: Function, userUUID: string): {[key in USER_ACTION
 	getUserUUID: () => {
 		send(WssUserRequest(USER_ACTION.GET_USER_UUID));
 	},
-	logout: () => {
-		send(WssUserRequest(USER_ACTION.LOGOUT, { userUUID: userUUID }));
+	logout: (roomUUID?: string) => {
+		send(WssUserRequest(USER_ACTION.LOGOUT, { userUUID }));
+		if (roomUUID) {
+			send(WssRoomRequest(ROOM_ACTION.LEAVE, { roomUUID, userUUID }))
+		}
 	}
 });
 

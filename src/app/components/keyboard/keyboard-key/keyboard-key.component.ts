@@ -2,10 +2,10 @@ import { Component, OnInit, ChangeDetectionStrategy, Input, HostBinding } from '
 import { KeyboardKeyData } from '../keyboard';
 
 @Component({
-  selector: 'app-keyboard-key',
-  templateUrl: './keyboard-key.component.html',
-  styleUrls: ['./keyboard-key.component.less'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+	selector: 'app-keyboard-key',
+	templateUrl: './keyboard-key.component.html',
+	styleUrls: ['./keyboard-key.component.less'],
+	changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class KeyboardKeyComponent implements OnInit {
 	@Input() key: KeyboardKeyData;
@@ -13,11 +13,11 @@ export class KeyboardKeyComponent implements OnInit {
 	@HostBinding('class.white') isWhite: boolean; 
 	@HostBinding('class.black') isBlack: boolean; 
 
-  constructor() { }
+	constructor() { }
 
-  ngOnInit(): void {
+	ngOnInit(): void {
 		this.isWhite = this.key.color === 'white';
 		this.isBlack = this.key.color === 'black';
-  }
+	}
 
 }

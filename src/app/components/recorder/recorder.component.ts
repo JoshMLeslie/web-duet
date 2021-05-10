@@ -1,18 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 
 @Component({
-  selector: 'app-recorder',
-  templateUrl: './recorder.component.html',
-  styleUrls: ['./recorder.component.less']
+	selector: 'app-recorder',
+	templateUrl: './recorder.component.html',
+	styleUrls: ['./recorder.component.less']
 })
-export class RecorderComponent implements OnInit {
+export class RecorderComponent {
 	startTime: ReturnType<Date['getTime']>;
 	endTime: ReturnType<Date['getTime']>;
 
-  constructor() { }
-
-  ngOnInit(): void {
-  }
+	constructor() { }
 
 	startRecording() {
 		this.startTime = new Date().getTime();

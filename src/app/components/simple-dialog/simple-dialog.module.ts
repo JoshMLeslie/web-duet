@@ -7,12 +7,12 @@ import { MatButtonModule } from '@angular/material/button';
 
 
 @NgModule({
-  declarations: [SimpleDialogComponent],
-  imports: [
-    CommonModule,
+	declarations: [SimpleDialogComponent],
+	imports: [
+		CommonModule,
 		MatDialogModule,
 		MatButtonModule
-  ],
+	],
 	exports: [SimpleDialogComponent],
 	entryComponents: [SimpleDialogComponent]
 })

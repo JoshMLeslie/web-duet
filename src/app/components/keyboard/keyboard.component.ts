@@ -12,9 +12,9 @@ import { KeyboardKeyData, KeyboardKeys } from './keyboard';
 import { WB_PATTERN } from './keys-setup';
 
 @Component({
-  selector: 'app-keyboard',
-  templateUrl: './keyboard.component.html',
-  styleUrls: ['./keyboard.component.less'],
+	selector: 'app-keyboard',
+	templateUrl: './keyboard.component.html',
+	styleUrls: ['./keyboard.component.less'],
 })
 export class KeyboardComponent implements OnInit, OnDestroy {
 	@Input() keyboardSize = 88;

@@ -5,23 +5,23 @@ import { UserService } from '../../services/user.service';
 import { WebsocketService } from '../../services/websocket.service';
 
 @Component({
-  selector: 'app-matching',
-  templateUrl: './matching.component.html',
-  styleUrls: ['./matching.component.less']
+	selector: 'app-matching',
+	templateUrl: './matching.component.html',
+	styleUrls: ['./matching.component.less']
 })
 export class MatchingComponent implements OnInit {
 	roomUUID: string;
 	roomUUIDControl = new FormControl(null, Validators.required);
 
-  constructor(
+	constructor(
 		private wss: WebsocketService,
 		private router: Router,
 		private us: UserService
 	) { }
 
-  ngOnInit(): void {
+	ngOnInit(): void {
 		this.roomUUID = this.wss.room.newUUID();
-  }
+	}
 
 	enterRoom() {
 		const roomUUID = (

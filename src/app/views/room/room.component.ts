@@ -61,6 +61,7 @@ export class RoomComponent implements OnInit, OnDestroy {
 	ngOnDestroy() {
 		this.destroy$.next();
 		this.destroy$.complete();
+		this.wss.user.logout(this.roomUUID);
 	}
 
 	init() {

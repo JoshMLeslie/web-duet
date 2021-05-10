@@ -7,17 +7,17 @@ import { MatButtonModule } from '@angular/material/button';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
-  declarations: [
-    MatchingComponent
-  ],
-  imports: [
-    CommonModule,
+	declarations: [
+		MatchingComponent
+	],
+	imports: [
+		CommonModule,
 		MatCardModule,
 		MatInputModule,
 		MatButtonModule,
 		FormsModule,
 		ReactiveFormsModule
-  ],
+	],
 	exports: [
 		MatchingComponent
 	]

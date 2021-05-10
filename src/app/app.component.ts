@@ -11,7 +11,7 @@ import { WebsocketService } from './services/websocket.service';
 export class AppComponent {
 	@HostListener('window:unload', ['$event']) unload() {
 		this.wss.user.logout();
-  }
+	}
 
 	constructor(
 		private wss: WebsocketService,

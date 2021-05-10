@@ -5,7 +5,7 @@ import { MIDIInputMap } from '../models/midi';
 import { MidiObject, MidiSubject, RawMidiData } from '../models/midi-data';
 
 @Injectable({
-  providedIn: 'root'
+	providedIn: 'root'
 })
 export class MidiListenerService {
 	// https://www.midi.org/specifications-old/item/table-2-expanded-messages-list-status-bytes
@@ -23,7 +23,7 @@ export class MidiListenerService {
 		return this.accessStatus.pipe(map(v => v === 'granted'));
 	}
 
-  constructor() { }
+	constructor() { }
 
 	init() {
 		this.startMidi();

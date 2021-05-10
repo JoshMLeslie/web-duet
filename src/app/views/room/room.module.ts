@@ -5,14 +5,14 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { KeyboardModule } from '../../components/keyboard/keyboard.module';
 
 @NgModule({
-  declarations: [
-    RoomComponent
-  ],
-  imports: [
-    CommonModule,
+	declarations: [
+		RoomComponent
+	],
+	imports: [
+		CommonModule,
 		MatProgressSpinnerModule,
 		KeyboardModule
-  ],
+	],
 	exports: [
 		RoomComponent
 	]
