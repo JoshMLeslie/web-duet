@@ -1,16 +1,6 @@
 runtime: custom
 env: flex
 
-handlers:
-- url: /
-  static_dir: /web-duet
-- url: /
-  static_files: /web-duet/index.html
-  upload: /web-duet/index.html
-- url: /.*
-  static_files: /web-duet/index.html
-  upload: /web-duet/index.html
-
 # This sample incurs costs to run on the App Engine flexible environment.
 # The settings below are to reduce costs during testing and are not appropriate
 # for production use. For more information, see:
@@ -19,7 +9,44 @@ manual_scaling:
   instances: 1
 resources:
   cpu: 1
-  memory_gb: 0.5
+  memory_gb: 1
   disk_size_gb: 10
 network:
   session_affinity: true
+
+handlers:
+- url: /(.+\.js)
+  static_files: ./\1
+  upload: ./(.+\.js)
+
+- url: /(.+\.css)
+  static_files: ./\1
+  upload: ./(.+\.css)
+
+- url: /(.+\.png)
+  static_files: ./\1
+  upload: ./(.+\.png)
+
+- url: /(.+\.jpg)
+  static_files: ./\1
+  upload: ./(.+\.jpg)
+
+- url: /(.+\.svg)
+  static_files: ./\1
+  upload: ./(.+\.svg)
+
+- url: /favicon.ico
+  static_files: ./favicon.ico
+  upload: ./favicon.ico
+
+- url: /(.+\.json)
+  static_files: ./\1
+  upload: ./(.+\.json)
+
+- url: /(.+)
+  static_files: ./index.html
+  upload: ./index.html
+
+- url: /
+  static_files: ./index.html
+  upload: ./index.html
