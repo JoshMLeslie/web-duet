@@ -1,52 +1,78 @@
+# For more information, see:
+# intro: https://cloud.google.com/appengine/docs/flexible/nodejs/configuring-your-app-with-app-yaml
+# detail: https://cloud.google.com/appengine/docs/flexible/nodejs/reference/app-yaml
+
 runtime: custom
 env: flex
 
-# This sample incurs costs to run on the App Engine flexible environment.
-# The settings below are to reduce costs during testing and are not appropriate
-# for production use. For more information, see:
-# https://cloud.google.com/appengine/docs/flexible/nodejs/configuring-your-app-with-app-yaml
+network:
+  session_affinity: true
+  forwarded_ports:
+  - 80
+  - 443
+
+# TODO: swtich to automatic scaling
+# https://cloud.google.com/appengine/docs/flexible/nodejs/reference/app-yaml#automatic_scaling
 manual_scaling:
   instances: 1
+
 resources:
   cpu: 1
   memory_gb: 1
   disk_size_gb: 10
-network:
-  session_affinity: true
 
-handlers:
-- url: /(.+\.js)
-  static_files: ./\1
-  upload: ./(.+\.js)
+# Liveness & Readiness replaces _ah health checks
 
-- url: /(.+\.css)
-  static_files: ./\1
-  upload: ./(.+\.css)
+# https://cloud.google.com/appengine/docs/flexible/nodejs/reference/app-yaml#liveness_checks
+liveness_check:
+  path: "/check_health"
+  check_interval_sec: 30
+  timeout_sec: 4
+  failure_threshold: 2
+  success_threshold: 2
 
-- url: /(.+\.png)
-  static_files: ./\1
-  upload: ./(.+\.png)
+# https://cloud.google.com/appengine/docs/flexible/nodejs/reference/app-yaml#readiness_checks
+readiness_check:
+  path: "/check_ready"
+  check_interval_sec: 5
+  timeout_sec: 4
+  failure_threshold: 2
+  success_threshold: 2
+  app_start_timeout_sec: 300
 
-- url: /(.+\.jpg)
-  static_files: ./\1
-  upload: ./(.+\.jpg)
+# handlers:
+# - url: /(.+\.js)
+#   static_files: ./\1
+#   upload: ./(.+\.js)
 
-- url: /(.+\.svg)
-  static_files: ./\1
-  upload: ./(.+\.svg)
+# - url: /(.+\.css)
+#   static_files: ./\1
+#   upload: ./(.+\.css)
 
-- url: /favicon.ico
-  static_files: ./favicon.ico
-  upload: ./favicon.ico
+# - url: /(.+\.png)
+#   static_files: ./\1
+#   upload: ./(.+\.png)
 
-- url: /(.+\.json)
-  static_files: ./\1
-  upload: ./(.+\.json)
+# - url: /(.+\.jpg)
+#   static_files: ./\1
+#   upload: ./(.+\.jpg)
 
-- url: /(.+)
-  static_files: ./index.html
-  upload: ./index.html
+# - url: /(.+\.svg)
+#   static_files: ./\1
+#   upload: ./(.+\.svg)
 
-- url: /
-  static_files: ./index.html
-  upload: ./index.html
+# - url: /favicon.ico
+#   static_files: ./favicon.ico
+#   upload: ./favicon.ico
+
+# - url: /(.+\.json)
+#   static_files: ./\1
+#   upload: ./(.+\.json)
+
+# - url: /(.+)
+#   static_files: ./index.html
+#   upload: ./index.html
+
+# - url: /
+#   static_files: ./index.html
+#   upload: ./index.html

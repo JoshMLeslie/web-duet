@@ -15,10 +15,11 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "deploy": "ng build --prod && gcloud app deploy"
+    "deploy": "ng build --prod && gcloud app deploy",
+		"docker:test": "docker run -p 8080:8080 webduet"
   },
   "engines": {
-    "node": "15.x.x"
+    "node": "14.x.x"
   },
   "private": true,
   "dependencies": {

@@ -2,6 +2,20 @@
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 10.1.2.
 
+# Deployment Noise
+
+## app.yaml
+Contains deployment instructions for `gcloud app deploy`
+
+## Dockerfile
+Hosts the multi-stage docker instructions that:
+- 1 - node14 container - builds the Angular app
+- 2 - nginx container  - copys build files + nginx.conf to expected location(s) in the container, then starts nginx
+
+## nginx.conf
+Contains the configuration for the nginx instance started by Docker
+
+# Angular Noise
 ## Development server
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
