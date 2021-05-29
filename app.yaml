@@ -8,8 +8,8 @@ env: flex
 network:
   session_affinity: true
   forwarded_ports:
-  - 80
-  - 443
+    - 80
+    - 443
 
 # TODO: swtich to automatic scaling
 # https://cloud.google.com/appengine/docs/flexible/nodejs/reference/app-yaml#automatic_scaling
@@ -25,7 +25,7 @@ resources:
 
 # https://cloud.google.com/appengine/docs/flexible/nodejs/reference/app-yaml#liveness_checks
 liveness_check:
-  path: "/check_health"
+  path: '/check_health'
   check_interval_sec: 30
   timeout_sec: 4
   failure_threshold: 2
@@ -33,13 +33,12 @@ liveness_check:
 
 # https://cloud.google.com/appengine/docs/flexible/nodejs/reference/app-yaml#readiness_checks
 readiness_check:
-  path: "/check_ready"
+  path: '/check_ready'
   check_interval_sec: 5
   timeout_sec: 4
   failure_threshold: 2
   success_threshold: 2
   app_start_timeout_sec: 300
-
 # handlers:
 # - url: /(.+\.js)
 #   static_files: ./\1
