@@ -1,7 +1,30 @@
 # Websocket Connection
 ## WebRTC + Video Chat
-Good for websocket / data passing stuff
+Better than WebRTC for data passing stuff bc after establishing a connection, doesn't require the server to be in the middle
 https://mattbutterfield.com/blog/2021-05-02-adding-video-chat
+
+
+## PeerJs a WebRTC client
+https://peerjs.com/
+
+### via https://gist.github.com/sagivo/3a4b2f2c7ac6e1b5267c2f1f59ac6c6b#gistcomment-3648786
+> Also facing same problem.. My app works fine if both peer on same network if they are own different network they not connect. I try many stun server form list even almost no one work? Can any one mentioned currently working stun server? or i need to create one on my vps.. Can any one please guide how i can make stun server on window base VPS. Thanks
+
+> Google's STUN servers are still operational. You can check their (Google's and others) operational status here:
+
+https://webrtc.github.io/samples/src/content/peerconnection/trickle-ice/
+
+> If they return a result of type srflx (for STUN) or relay (for TURN) they work. These (STUN servers) vastly help connections with different network configurations depending on the ISP, but sometimes they're not enough. TURN servers come into play when that happens and fills the gap left by the STUN (which is a really small percent, but it still considerable).
+
+> I would recommend installing your own server following this tutorial:
+
+https://ourcodeworld.com/articles/read/1175/how-to-create-and-configure-your-own-stun-turn-server-with-coturn-in-ubuntu-18-04
+
+> and this too:
+
+https://meetrix.io/blog/webrtc/coturn/installation.html
+
+> They are both good references and it's not that complicated to get one running.
 
 ## AWS WS stuff
 AWS WS Article - https://aws.amazon.com/blogs/compute/announcing-websocket-apis-in-amazon-api-gateway/
