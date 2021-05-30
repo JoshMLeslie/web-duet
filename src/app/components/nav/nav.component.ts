@@ -15,7 +15,7 @@ export class NavComponent {
 	);
 	roomUUID$ = this.router.events.pipe(
 		filter(event => event instanceof NavigationEnd),
-		map(event => (event as NavigationEnd).url.slice(1).replace(/-/g, ' '))
+		map(event => (event as NavigationEnd).url.slice(1))
 	);
 
 	constructor(private us: UserService, private router: Router) {}
