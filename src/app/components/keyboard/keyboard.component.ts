@@ -1,6 +1,7 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { merge, Observable, Subject } from 'rxjs';
 import { filter, map, takeUntil, tap } from 'rxjs/operators';
+import { WebRTCService } from 'src/app/services/web-rtc.service';
 import { MidiMapSubject } from '../../models/midi-data';
 import { KEYBOARD_ACTION } from '../../models/room';
 import { AudioOutputService } from '../../services/audio-output.service';
@@ -21,7 +22,7 @@ export class KeyboardComponent implements OnInit, OnDestroy {
 	@Input() userUUID: string;
 
 	_keys: KeyboardKeys;
-	updateTone ({id, tone}: KeyboardKeyData) {
+	updateToneDisplay ({id, tone}: KeyboardKeyData) {
 		this._keys.set(id, {
 			...this._keys.get(id),
 			tone
@@ -38,7 +39,8 @@ export class KeyboardComponent implements OnInit, OnDestroy {
 		private keyboardListener: ComputerKeyboardListeningService,
 		private audioService: AudioOutputService,
 		private us: UserService,
-		private wss: WebsocketService
+		private wss: WebsocketService,
+		private wRTC: WebRTCService
 	) {
 		this.buildKeys();
 	}
@@ -59,18 +61,20 @@ export class KeyboardComponent implements OnInit, OnDestroy {
 				this.keyboardListener.activeInput$
 			).pipe(
 				tap(input => {
-					this.wss.keyboard.note(input.data)
+					this.wRTC.send(input.data);
+					// this.wss.keyboard.note(input.data)
 				})
 			)
 		} else {
-			stream = this.wss.recieveData$.pipe(
-				filter(res => res.action === KEYBOARD_ACTION.NOTE),
-				map(res => ({data: res.data.note}))
-			)
+			// stream = this.wss.recieveData$.pipe(
+			// 	filter(res => res.action === KEYBOARD_ACTION.NOTE),
+			// 	map(res => ({data: res.data.note}))
+			// )
+			stream = this.wRTC.fromRemoteStream$;
 		}
 		stream.pipe(takeUntil(this.destroy$)).subscribe(v => {
 			this.audioService.handleMidiNote(v.data);
-			this.updateTone(v.data);
+			this.updateToneDisplay(v.data);
 		});
 		
 	}

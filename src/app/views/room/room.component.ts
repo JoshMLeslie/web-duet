@@ -2,6 +2,7 @@ import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { combineLatest, Observable, Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
+import { WebRTCService } from 'src/app/services/web-rtc.service';
 import { ROOM_ACTION } from '../../models/room';
 import { UserService } from '../../services/user.service';
 import { WebsocketService } from '../../services/websocket.service';
@@ -26,7 +27,8 @@ export class RoomComponent implements OnInit, OnDestroy {
 	constructor(
 		private wss: WebsocketService,
 		private activatedRoute: ActivatedRoute,
-		private us: UserService
+		private us: UserService,
+		private wRTC: WebRTCService
 	) {
 		this.wss.recieveData$.pipe(
 			takeUntil(this.destroy$),
@@ -45,17 +47,23 @@ export class RoomComponent implements OnInit, OnDestroy {
 
 	ngOnInit(): void {
 		this.roomUUID = this.activatedRoute.snapshot.url[0].path;
-
-		combineLatest([
-			this.wss.ready$,
-			this.us.uuid$,
-		])
-			.pipe(takeUntil(this.destroy$))
-			.subscribe(([ready, userUUID]) => {
-				if (ready && !!userUUID) {
-					this.init();
-				}
-			});
+		this.init();
+		
+		this.wRTC.isCallStarted$.subscribe(state => {
+			if (state) {
+				console.log('user joined')
+			}
+		})
+		// combineLatest([
+		// 	this.wss.ready$,
+		// 	this.us.uuid$,
+		// ])
+		// 	.pipe(takeUntil(this.destroy$))
+		// 	.subscribe(([ready, userUUID]) => {
+		// 		if (ready && !!userUUID) {
+		// 			this.init();
+		// 		}
+		// 	});
 	}
 
 	ngOnDestroy() {
@@ -65,8 +73,8 @@ export class RoomComponent implements OnInit, OnDestroy {
 	}
 
 	init() {
-		this.wss.room.ensure(this.roomUUID);
-		this.wss.room.users(this.roomUUID);
+		// this.wss.room.ensure(this.roomUUID);
+		// this.wss.room.users(this.roomUUID);
 		this.loading = false;
 	}
 }

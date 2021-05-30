@@ -16,7 +16,10 @@ export class MidiListenerService {
 
 	get accessStatus(): Observable<PermissionState> {
 		if (!navigator?.permissions?.query) return of('denied');
-		return from(navigator.permissions.query({name: 'midi'}).then(r => r.state));
+		return from(
+			navigator.permissions.query({name: 'midi'})
+			.then(r => r.state)
+		);
 	}
 
 	get accessGranted(): Observable<boolean> {

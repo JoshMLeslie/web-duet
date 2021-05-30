@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import Peer from 'peerjs';
-import { BehaviorSubject, Subject } from 'rxjs';
-import { v4 as uuidv4 } from 'uuid';
+import { BehaviorSubject, Observable, Subject, throwError } from 'rxjs';
+import { MidiObject } from '../models/midi-data';
+import { AudioOutputService } from './audio-output.service';
+import { UserService } from './user.service';
 
 // adapted from https://github.com/ullalaaron/angular-peerjs/blob/main/src/app/call.service.ts
 
@@ -11,23 +13,21 @@ import { v4 as uuidv4 } from 'uuid';
 })
 export class WebRTCService {
 	private peer: Peer;
-	private mediaCall: Peer.MediaConnection;
+	private conn: Peer.DataConnection;
 
-	private _localStream$: BehaviorSubject<MediaStream> = new BehaviorSubject(
-		null
-	);
-	localStream$ = this._localStream$.asObservable();
-	private _remoteStream$: BehaviorSubject<MediaStream> = new BehaviorSubject(
-		null
-	);
-	remoteStream$ = this._remoteStream$.asObservable();
+	private _fromRemoteStream$ = new BehaviorSubject<MidiObject>(null);
+	fromRemoteStream$ = this._fromRemoteStream$.asObservable();
 
-	private isCallStartedBs = new Subject<boolean>();
-	isCallStarted$ = this.isCallStartedBs.asObservable();
+	private _isCallStarted$ = new BehaviorSubject<boolean>(false);
+	isCallStarted$ = this._isCallStarted$.asObservable();
 
-	constructor(private snackBar: MatSnackBar) {}
+	constructor(
+		private audioService: AudioOutputService,
+		private userService: UserService,
+		private snackBar: MatSnackBar
+	) {}
 
-	initPeer(): string {
+	initPeer() {
 		if (!this.peer || this.peer.disconnected) {
 			const peerJsOptions: Peer.PeerJSOption = {
 				debug: 3,
@@ -41,111 +41,110 @@ export class WebRTCService {
 						}
 					]
 				}
+				/** For custom server */
+				// host: location.hostname,
+				// port: +location.port || (location.protocol === 'https:' ? 443 : 80),
+				// path: '/peerjs'
 			};
 			try {
-				const id = uuidv4();
-				this.peer = new Peer(id, peerJsOptions);
-				return id;
+				const uuid = this.userService.genUUID();
+				this.peer = new Peer(uuid, peerJsOptions);
 			} catch (error) {
 				console.error(error);
 			}
 		}
 	}
 
+	listAllPeers(): Observable<string[]> {
+		if (!this.peer) {
+			return throwError(new ReferenceError('connection not established'));
+		}
+		return new Observable(subscriber => {
+			this.peer.listAllPeers(peers => {
+				console.log(peers);
+				subscriber.next(peers);
+				subscriber.complete();
+			});
+			return subscriber;
+		});
+	}
+
+	send(data: MidiObject) {
+		if (!this.conn) {
+			return throwError(new ReferenceError('connection not established'));
+		}
+		this.conn.send(data);
+	}
+
 	/**
 	 * Called by the user initializing a room
 	 */
-	async enableCallAnswer() {
+	startConnection() {
 		try {
-			const stream = await navigator.mediaDevices.getUserMedia({
-				video: true,
-				audio: true
-			});
-			this._localStream$.next(stream);
-			this.peer.on('call', async call => {
-				this.mediaCall = call;
-				this.isCallStartedBs.next(true);
+			this.peer.on('connection', (call: Peer.DataConnection) => {
+				console.log('connection established')
+				this.conn = call;
+				this._isCallStarted$.next(true);
 
-				this.mediaCall.answer(stream);
-				this.mediaCall.on('data', remoteStream => {
-					this._remoteStream$.next(remoteStream);
+				this.conn.on('data', (remoteStream: MidiObject) => {
+					this._fromRemoteStream$.next(remoteStream);
 				});
-				this.mediaCall.on('error', err => {
+				this.conn.on('error', err => {
 					this.snackBar.open(err, 'Close');
-					this.isCallStartedBs.next(false);
+					this._isCallStarted$.next(false);
 					console.error(err);
 				});
-				this.mediaCall.on('close', () => this.onCallClose());
+				this.conn.on('close', () => this.closecall());
 			});
-		} catch (ex) {
-			console.error(ex);
-			this.snackBar.open(ex, 'Close');
-			this.isCallStartedBs.next(false);
+		} catch (err) {
+			console.error(err);
+			this.snackBar.open(err, 'Close');
+			this._isCallStarted$.next(false);
 		}
 	}
 
 	/**
-	 * Called by the user entering a room
+	 * Called by the joining user
 	 */
-	async establishMediaCall(remotePeerId: string) {
+	connectToUser(remoteUserId: string) {
 		try {
-			const stream = await navigator.mediaDevices.getUserMedia({
-				video: true,
-				audio: true
-			});
-
-			const connection = this.peer.connect(remotePeerId);
-			connection.on('error', err => {
-				console.error(err);
-				this.snackBar.open(err, 'Close');
-			});
-
-			this.mediaCall = this.peer.call(remotePeerId, stream);
-			if (!this.mediaCall) {
+			this.conn = this.peer.connect(remoteUserId);
+			if (!this.conn) {
 				let errorMessage = 'Unable to connect to remote peer';
 				this.snackBar.open(errorMessage, 'Close');
 				throw new Error(errorMessage);
 			}
-			this._localStream$.next(stream);
-			this.isCallStartedBs.next(true);
 
-			this.mediaCall.on('data', remoteStream => {
-				this._remoteStream$.next(remoteStream);
-			});
-			this.mediaCall.on('error', err => {
+			this._isCallStarted$.next(true);
+
+			this.conn.on('error', err => {
 				this.snackBar.open(err, 'Close');
+				this._isCallStarted$.next(false);
 				console.error(err);
-				this.isCallStartedBs.next(false);
 			});
-			this.mediaCall.on('close', () => this.onCallClose());
-		} catch (ex) {
-			console.error(ex);
-			this.snackBar.open(ex, 'Close');
-			this.isCallStartedBs.next(false);
+		} catch (err) {
+			console.error(err);
+			this.snackBar.open(err, 'Close');
+			this._isCallStarted$.next(false);
 		}
 	}
 
-	private onCallClose() {
-		this._remoteStream$?.value.getTracks().forEach(track => {
-			track.stop();
-		});
-		this._localStream$?.value.getTracks().forEach(track => {
-			track.stop();
-		});
-		this.snackBar.open('Call Ended', 'Close');
-	}
-
-	closeMediaCall() {
-		this.mediaCall?.close();
-		if (!this.mediaCall) {
-			this.onCallClose();
-		}
-		this.isCallStartedBs.next(false);
-	}
-
+	// remove user from room
 	destroyPeer() {
-		this.mediaCall?.close();
+		this.audioService.stopAudioContext();
+		this.conn?.close();
 		this.peer?.disconnect();
 		this.peer?.destroy();
+	}
+
+	// end room
+	closeMediaCall() {
+		this.conn ? this.conn.close() : this.closecall();
+		this._isCallStarted$.next(false);
+	}
+
+	private closecall() {
+		this.audioService.stopAudioContext();
+		this.snackBar.open('Call Ended', 'Close');
 	}
 }

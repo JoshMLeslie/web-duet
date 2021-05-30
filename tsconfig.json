@@ -15,10 +15,10 @@
     "lib": [
       "es2018",
       "dom"
-    ]
+    ],
+		"allowSyntheticDefaultImports": true
   },
 	"angularCompilerOptions": {
-		"strictTemplates": true,
-		"allowSynethicDefaultImports": true
+		"strictTemplates": true
 	}
 }

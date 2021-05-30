@@ -15,17 +15,12 @@ export class AudioOutputService {
 		setTimeout(_ => this.startAudioContext(), 0);
 	}
 
-	handleMidiNote(note: MidiObject) {
-		note.tone > 0 ? this.playMidiNote(note) : this.stopMidiNote(note);
-	}
-
 	startAudioContext() {
 		this.context = new AudioContext();
 
 		if (this.context.state === 'running') {
 			console.info('audio started')
 		} else {
-			this.startAudioContext();
 			console.error('could not start audio');
 			const diag = this.dialog.open(SimpleDialogComponent, {
 				data: {
@@ -47,13 +42,16 @@ export class AudioOutputService {
 		}
 	}
 
-	private playMidiNote(note: MidiObject) {
+	stopAudioContext() {
+		this.context.close();
+	}
+
+	handleMidiNote(note: MidiObject) {
 		if (!this.notes[note.id]) {
 			this.notes[note.id] = new Note(this.context, note);
 		}
-		this.notes[note.id].start(note.tone);
-	}
-	private stopMidiNote(note: MidiObject) {
-		this.notes[note.id].stop();
+		note.tone > 0 ?
+			this.notes[note.id].start(note.tone) :
+			this.notes[note.id].stop();
 	}
 }

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { WebRTCService } from 'src/app/services/web-rtc.service';
 import { UserService } from '../../services/user.service';
 import { WebsocketService } from '../../services/websocket.service';
 
@@ -16,18 +17,28 @@ export class MatchingComponent implements OnInit {
 	constructor(
 		private wss: WebsocketService,
 		private router: Router,
-		private us: UserService
+		private us: UserService,
+		private wRTC: WebRTCService
 	) { }
 
 	ngOnInit(): void {
-		this.roomUUID = this.wss.room.newUUID();
+		// this.roomUUID = this.wss.room.newUUID();
+	}
+
+	createRoom() {
+		this.wRTC.startConnection();
+		this.router.navigate([this.us.getUUID()]);
 	}
 
 	enterRoom() {
-		const roomUUID = (
+		// const roomUUID = (
+		// 	this.roomUUIDControl.value || this.roomUUID
+		// ).replace(/\s/g, '-');
+		// this.wss.room.create(roomUUID);
+		const joinUserUUID = (
 			this.roomUUIDControl.value || this.roomUUID
 		).replace(/\s/g, '-');
-		this.wss.room.create(roomUUID);
-		this.router.navigate([roomUUID]);
+		this.wRTC.connectToUser(joinUserUUID)
+		this.router.navigate([joinUserUUID]);
 	}
 }
