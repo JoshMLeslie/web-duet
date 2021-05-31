@@ -7,7 +7,7 @@ import { KEYBOARD_ACTION } from '../../models/room';
 import { AudioOutputService } from '../../services/audio-output.service';
 import { ComputerKeyboardListeningService } from '../../services/keyboard-binding.service';
 import { MidiListenerService } from '../../services/midi-listener.service';
-import { UserService } from '../../services/user.service';
+import { UuidService } from '../../services/user.service';
 import { WebsocketService } from '../../services/websocket.service';
 import { KeyboardKeyData, KeyboardKeys } from './keyboard';
 import { WB_PATTERN } from './keys-setup';
@@ -38,7 +38,7 @@ export class KeyboardComponent implements OnInit, OnDestroy {
 		private midiListener: MidiListenerService,
 		private keyboardListener: ComputerKeyboardListeningService,
 		private audioService: AudioOutputService,
-		private us: UserService,
+		private us: UuidService,
 		private wss: WebsocketService,
 		private wRTC: WebRTCService
 	) {
@@ -53,7 +53,7 @@ export class KeyboardComponent implements OnInit, OnDestroy {
 		// 	this.updateTone(key as unknown as KeyboardKeyData);
 		// })
 		let stream: Observable<any>;
-		if (this.userUUID === this.us.getUUID()) {
+		if (this.userUUID === this.us.uuid) {
 			this.midiListener.init();
 			this.keyboardListener.init();
 			stream = merge(

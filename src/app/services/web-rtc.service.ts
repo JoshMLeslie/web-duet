@@ -4,7 +4,7 @@ import Peer from 'peerjs';
 import { BehaviorSubject, Observable, Subject, throwError } from 'rxjs';
 import { MidiObject } from '../models/midi-data';
 import { AudioOutputService } from './audio-output.service';
-import { UserService } from './user.service';
+import { UuidService } from './user.service';
 
 // adapted from https://github.com/ullalaaron/angular-peerjs/blob/main/src/app/call.service.ts
 
@@ -21,13 +21,21 @@ export class WebRTCService {
 	private _isCallStarted$ = new BehaviorSubject<boolean>(false);
 	isCallStarted$ = this._isCallStarted$.asObservable();
 
+	get isCallStarted(): boolean {
+		return this._isCallStarted$.value;
+	}
+
+	get hasConnections(): boolean {
+		return !!Object.keys(this.peer.connections).length
+	}
+
 	constructor(
 		private audioService: AudioOutputService,
-		private userService: UserService,
+		private userService: UuidService,
 		private snackBar: MatSnackBar
 	) {}
 
-	initPeer() {
+	initPeer(uuid?: string) {
 		if (!this.peer || this.peer.disconnected) {
 			const peerJsOptions: Peer.PeerJSOption = {
 				debug: 3,
@@ -47,7 +55,7 @@ export class WebRTCService {
 				// path: '/peerjs'
 			};
 			try {
-				const uuid = this.userService.genUUID();
+				uuid ||= this.userService.genUUID();
 				this.peer = new Peer(uuid, peerJsOptions);
 			} catch (error) {
 				console.error(error);
@@ -114,7 +122,7 @@ export class WebRTCService {
 				this.snackBar.open(errorMessage, 'Close');
 				throw new Error(errorMessage);
 			}
-
+			console.log('connected to:', remoteUserId)
 			this._isCallStarted$.next(true);
 
 			this.conn.on('error', err => {

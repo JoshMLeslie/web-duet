@@ -4,7 +4,7 @@ import { combineLatest, Observable, Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
 import { WebRTCService } from 'src/app/services/web-rtc.service';
 import { ROOM_ACTION } from '../../models/room';
-import { UserService } from '../../services/user.service';
+import { UuidService } from '../../services/user.service';
 import { WebsocketService } from '../../services/websocket.service';
 
 @Component({
@@ -27,14 +27,14 @@ export class RoomComponent implements OnInit, OnDestroy {
 	constructor(
 		private wss: WebsocketService,
 		private activatedRoute: ActivatedRoute,
-		private us: UserService,
+		private us: UuidService,
 		private wRTC: WebRTCService
 	) {
 		this.wss.recieveData$.pipe(
 			takeUntil(this.destroy$),
 			filter(res => res.action === ROOM_ACTION.USERS)
 		).subscribe((res: {data?: string[]}) => {
-			const user = this.us.getUUID();
+			const user = this.us.uuid;
 			console.log(res)
 			if (res.data) {
 				this.users = [
@@ -47,13 +47,19 @@ export class RoomComponent implements OnInit, OnDestroy {
 
 	ngOnInit(): void {
 		this.roomUUID = this.activatedRoute.snapshot.url[0].path;
+		this.wRTC.initPeer(this.roomUUID);
+
+		if (this.wRTC.hasConnections) {
+			this.wRTC.connectToUser(this.us.uuid);
+		} else {
+			this.wRTC.startConnection();
+			this.wRTC.isCallStarted$.subscribe(state => {
+				if (state) {
+					console.log('user joined')
+				}
+			})
+		}
 		this.init();
-		
-		this.wRTC.isCallStarted$.subscribe(state => {
-			if (state) {
-				console.log('user joined')
-			}
-		})
 		// combineLatest([
 		// 	this.wss.ready$,
 		// 	this.us.uuid$,

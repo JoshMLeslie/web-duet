@@ -2,6 +2,6 @@
 	<button *ngIf="roomUUID$ | async as roomUUID" id="nav-left" [cdkCopyToClipboard]="roomUUID">
 		<span>Current room: <br /> {{roomUUID}}</span>
 	</button>
-	<span id="nav-center" class="title">Web Duet</span>
+	<span id="nav-center" class="title" [routerLink]="['/']">Web Duet</span>
 	<span id="nav-right">Connected as <br /> {{user$ | async}}</span>
 </div>

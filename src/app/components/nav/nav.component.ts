@@ -1,8 +1,7 @@
 import { Component } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter, map } from 'rxjs/operators';
-import { MiscUtil } from '../../util/websocket.util';
-import { UserService } from '../../services/user.service';
+import { UuidService } from '../../services/user.service';
 
 @Component({
 	selector: 'app-nav',
@@ -10,13 +9,11 @@ import { UserService } from '../../services/user.service';
 	styleUrls: ['./nav.component.less']
 })
 export class NavComponent {
-	user$ = this.us.uuid$.pipe(
-		map(uuid => MiscUtil.newShortUUID(uuid))
-	);
+	user$ = this.us.uuid$;
 	roomUUID$ = this.router.events.pipe(
 		filter(event => event instanceof NavigationEnd),
 		map(event => (event as NavigationEnd).url.slice(1))
 	);
 
-	constructor(private us: UserService, private router: Router) {}
+	constructor(private us: UuidService, private router: Router) {}
 }

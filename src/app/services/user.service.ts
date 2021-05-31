@@ -4,9 +4,17 @@ import { v4 as uuidv4 } from 'uuid';
 @Injectable({
 	providedIn: 'root'
 })
-export class UserService {
+export class UuidService {
 	private _uuid$ = new BehaviorSubject<string>(null);
 	uuid$ = this._uuid$.asObservable();
+
+	set uuid(uuid: string) {
+		this._uuid$.next(uuid);
+	}
+
+	get uuid() {
+		return this._uuid$.value;
+	}
 
 	genUUID() {
 		const uuid = uuidv4();
@@ -14,13 +22,4 @@ export class UserService {
 		return uuid;
 	}
 
-	setUUID(uuid: string) {
-		console.log(uuid);
-		this._uuid$.next(uuid);
-	}
-
-	// use sync with caution.
-	getUUID() {
-		return this._uuid$.value;
-	}
 }

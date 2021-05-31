@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { WebRTCService } from 'src/app/services/web-rtc.service';
-import { UserService } from '../../services/user.service';
+import { UuidService } from '../../services/user.service';
 import { WebsocketService } from '../../services/websocket.service';
 
 @Component({
@@ -17,7 +17,7 @@ export class MatchingComponent implements OnInit {
 	constructor(
 		private wss: WebsocketService,
 		private router: Router,
-		private us: UserService,
+		private us: UuidService,
 		private wRTC: WebRTCService
 	) { }
 
@@ -27,7 +27,7 @@ export class MatchingComponent implements OnInit {
 
 	createRoom() {
 		this.wRTC.startConnection();
-		this.router.navigate([this.us.getUUID()]);
+		this.router.navigate([this.us.uuid]);
 	}
 
 	enterRoom() {
