@@ -8,7 +8,7 @@ export class UuidService {
 	private _uuid$ = new BehaviorSubject<string>(null);
 	uuid$ = this._uuid$.asObservable();
 
-	set uuid(uuid: string) {
+	setUUID(uuid: string) {
 		this._uuid$.next(uuid);
 	}
 

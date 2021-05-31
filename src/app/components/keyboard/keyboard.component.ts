@@ -7,7 +7,7 @@ import { KEYBOARD_ACTION } from '../../models/room';
 import { AudioOutputService } from '../../services/audio-output.service';
 import { ComputerKeyboardListeningService } from '../../services/keyboard-binding.service';
 import { MidiListenerService } from '../../services/midi-listener.service';
-import { UuidService } from '../../services/user.service';
+import { UuidService } from '../../services/uuid.service';
 import { WebsocketService } from '../../services/websocket.service';
 import { KeyboardKeyData, KeyboardKeys } from './keyboard';
 import { WB_PATTERN } from './keys-setup';

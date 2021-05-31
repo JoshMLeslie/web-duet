@@ -4,7 +4,7 @@ import { BehaviorSubject, combineLatest, Subject } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 import { WssResponse } from '../models/room';
 import { KeyboardUtil, RoomUtil, UserUtil } from '../util/websocket.util';
-import { UuidService } from './user.service';
+import { UuidService } from './uuid.service';
 
 // future thought - https://stackoverflow.com/questions/40688738/what-is-the-difference-between-sending-json-stringify-objects-and-plain-objects/40690049
 

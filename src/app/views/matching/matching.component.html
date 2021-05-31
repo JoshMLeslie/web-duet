@@ -1,16 +1,22 @@
 <div id="join-container">
 	<div>
-		<button id="new-button" mat-raised-button color="primary" (click)="createRoom()">New Room</button>
+		<button id="new-button" mat-raised-button color="primary" (click)="createRoom()">Create</button>
+		<button id="new-button" disabled mat-raised-button color="accent" (click)="joinRandom()">Random</button>
+
 		<mat-card>
-			<mat-card-title>Join</mat-card-title>
+			<mat-card-title>Custom</mat-card-title>
 		
 			<mat-card-content>
 				<mat-form-field>
-					<mat-label>{{roomUUID}}</mat-label>
-					<input matInput [formControl]="roomUUIDControl">
+					<mat-label>Room ID</mat-label>
+					<input matInput [formControl]="uuidControl">
+					<mat-error *ngIf="uuidControl.errors?.required">Required</mat-error>
+					<mat-error *ngIf="uuidControl.errors?.minlength">Min length is 10</mat-error>
 				</mat-form-field>
 				<mat-card-actions align="end">
-					<button mat-raised-button color="primary" (click)="enterRoom()">Enter</button>
+					<button mat-raised-button color="primary"
+						[disabled]="!uuidControl.value"
+						(click)="joinRoom()">Enter</button>
 				</mat-card-actions>
 			</mat-card-content>
 		</mat-card>

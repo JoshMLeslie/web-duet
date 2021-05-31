@@ -1,44 +1,48 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { WebRTCService } from 'src/app/services/web-rtc.service';
-import { UuidService } from '../../services/user.service';
-import { WebsocketService } from '../../services/websocket.service';
+import { WebRTCService } from '../../services/web-rtc.service';
+import { UuidService } from '../../services/uuid.service';
 
 @Component({
 	selector: 'app-matching',
 	templateUrl: './matching.component.html',
 	styleUrls: ['./matching.component.less']
 })
-export class MatchingComponent implements OnInit {
-	roomUUID: string;
-	roomUUIDControl = new FormControl(null, Validators.required);
+export class MatchingComponent {
+	readonly uuidControl = new FormControl(null, [
+		Validators.required,
+		Validators.minLength(10)
+	]);
 
 	constructor(
-		private wss: WebsocketService,
 		private router: Router,
-		private us: UuidService,
-		private wRTC: WebRTCService
-	) { }
-
-	ngOnInit(): void {
-		// this.roomUUID = this.wss.room.newUUID();
-	}
+		private wRTC: WebRTCService,
+		private us: UuidService
+	) {}
 
 	createRoom() {
-		this.wRTC.startConnection();
-		this.router.navigate([this.us.uuid]);
+		const uuid = this.cleanString(this.us.genUUID());
+		this.wRTC.connect(uuid);
+		this.router.navigate([uuid]);
 	}
 
-	enterRoom() {
-		// const roomUUID = (
-		// 	this.roomUUIDControl.value || this.roomUUID
-		// ).replace(/\s/g, '-');
-		// this.wss.room.create(roomUUID);
-		const joinUserUUID = (
-			this.roomUUIDControl.value || this.roomUUID
-		).replace(/\s/g, '-');
-		this.wRTC.connectToUser(joinUserUUID)
-		this.router.navigate([joinUserUUID]);
+	joinRoom() {
+		const uuid = this.cleanString(this.us.genUUID());
+		const remoteUuid = this.cleanString(this.uuidControl.value)
+		this.wRTC.connect(uuid, remoteUuid);
+		this.router.navigate([remoteUuid]);
+	}
+
+	joinRandom() {
+		console.log('TODO', 'requires custom wrtc/peerJs server')
+		// this.wRTC.init();
+		// this.wRTC.listAllPeers().subscribe(peers => {
+		// 	console.log(peers)
+		// })
+	}
+
+	private cleanString(str: string) {
+		return str.trim().replace(/\s/g, '-');
 	}
 }

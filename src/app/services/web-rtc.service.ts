@@ -4,7 +4,7 @@ import Peer from 'peerjs';
 import { BehaviorSubject, Observable, Subject, throwError } from 'rxjs';
 import { MidiObject } from '../models/midi-data';
 import { AudioOutputService } from './audio-output.service';
-import { UuidService } from './user.service';
+import { UuidService } from './uuid.service';
 
 // adapted from https://github.com/ullalaaron/angular-peerjs/blob/main/src/app/call.service.ts
 
@@ -29,14 +29,29 @@ export class WebRTCService {
 		return !!Object.keys(this.peer.connections).length
 	}
 
+	get initialized(): boolean {
+		return !!this.peer
+	}
+
 	constructor(
 		private audioService: AudioOutputService,
 		private userService: UuidService,
 		private snackBar: MatSnackBar
 	) {}
 
-	initPeer(uuid?: string) {
+	connect(uuid?: string, remoteUUID?: string) {
 		if (!this.peer || this.peer.disconnected) {
+			this.init(uuid);
+		}
+
+		if (this.hasConnections || remoteUUID) {
+			this.connectToUser(remoteUUID)
+		} else {
+			this.startConnection();
+		}
+	}
+
+	init(uuid?: string) {
 			const peerJsOptions: Peer.PeerJSOption = {
 				debug: 3,
 				config: {
@@ -60,7 +75,6 @@ export class WebRTCService {
 			} catch (error) {
 				console.error(error);
 			}
-		}
 	}
 
 	listAllPeers(): Observable<string[]> {

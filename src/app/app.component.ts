@@ -10,6 +10,5 @@ export class AppComponent {
 		// this.wss.user.logout();
 	}
 
-	constructor(private wRTC: WebRTCService) {
-	}
+	constructor(private wRTC: WebRTCService) {}
 }

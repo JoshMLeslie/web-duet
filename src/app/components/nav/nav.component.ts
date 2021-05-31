@@ -3,7 +3,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { NavigationEnd, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
-import { UuidService } from '../../services/user.service';
+import { UuidService } from '../../services/uuid.service';
 
 @Component({
 	selector: 'app-nav',
