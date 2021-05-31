@@ -3,13 +3,15 @@ import { CommonModule } from '@angular/common';
 import { NavComponent } from './nav.component';
 import { ClipboardModule } from '@angular/cdk/clipboard';
 import { RouterModule } from '@angular/router';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 @NgModule({
 	declarations: [NavComponent],
 	imports: [
 		CommonModule,
 		ClipboardModule,
-		RouterModule
+		RouterModule,
+		MatSnackBarModule
 	],
 	exports: [NavComponent]
 })

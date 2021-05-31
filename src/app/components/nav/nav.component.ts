@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { NavigationEnd, Router } from '@angular/router';
+import { Subject } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import { UuidService } from '../../services/user.service';
 
@@ -9,11 +11,30 @@ import { UuidService } from '../../services/user.service';
 	styleUrls: ['./nav.component.less']
 })
 export class NavComponent {
-	user$ = this.us.uuid$;
-	roomUUID$ = this.router.events.pipe(
+	readonly configButtonDisabled = /join/; // /foo|bar|baz/
+	readonly buttonDisabled$ = new Subject<boolean>();
+	readonly roomUUID$ = this.router.events.pipe(
 		filter(event => event instanceof NavigationEnd),
-		map(event => (event as NavigationEnd).url.slice(1))
+		map(event => {
+			const url = (event as NavigationEnd).url.slice(1) ||
+				(event as NavigationEnd).urlAfterRedirects.slice(1)
+
+				this.buttonDisabled$.next(
+					!this.configButtonDisabled.test(url)
+				);
+				
+			return url;
+		})
 	);
 
-	constructor(private us: UuidService, private router: Router) {}
+	constructor(
+		private router: Router,
+		private snackbar: MatSnackBar
+	) {}
+
+	copyConfirm() {
+		this.snackbar.open('Room ID copied', 'close', {
+			duration: 1000 // ms
+		})
+	}
 }

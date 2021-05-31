@@ -1,7 +1,10 @@
 <div id="nav-container">
-	<button *ngIf="roomUUID$ | async as roomUUID" id="nav-left" [cdkCopyToClipboard]="roomUUID">
-		<span>Current room: <br /> {{roomUUID}}</span>
-	</button>
+	<ng-container *ngIf="roomUUID$ | async as roomUUID">
+		<button *ngIf="buttonDisabled$ | async" id="nav-left"
+			(click)="copyConfirm()"
+			[cdkCopyToClipboard]="roomUUID">
+			<span>Current room:<br/>{{roomUUID}}</span>
+		</button>
+	</ng-container>
 	<span id="nav-center" class="title" [routerLink]="['/']">Web Duet</span>
-	<span id="nav-right">Connected as <br /> {{user$ | async}}</span>
 </div>
