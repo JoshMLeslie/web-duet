@@ -2,7 +2,6 @@ import { MidiObject } from "./midi-data";
 
 // room actions require roomUUID
 export enum ROOM_ACTION {
-	NEW = 'newUUID',
 	CLOSE = 'close',
 	CREATE = 'create',
 	ENSURE = 'ensure',

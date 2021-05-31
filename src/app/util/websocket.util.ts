@@ -1,5 +1,4 @@
 import { v4 as uuidV4 } from 'uuid';
-import * as UUIDReadable from 'uuid-readable';
 import { MidiObject } from '../models/midi-data';
 import {
 	KEYBOARD_ACTION,
@@ -10,15 +9,10 @@ import {
 	WssUserRequest
 } from '../models/room';
 
-export const MiscUtil = {
-	newShortUUID: (uuid?: string) => UUIDReadable.short(uuid || uuidV4())
-}
-
 export const RoomUtil = (
 	send: Function,
 	userUUID: string
 ): { [key in ROOM_ACTION]: Function } => ({
-	newUUID: MiscUtil.newShortUUID,
 	status: (roomUUID: string) => {
 		send(
 			WssRoomRequest(ROOM_ACTION.STATUS, {
@@ -37,7 +31,7 @@ export const RoomUtil = (
 	join: (roomUUID: string) => {
 		send(WssRoomRequest(ROOM_ACTION.JOIN, { roomUUID }));
 	},
-	create: (roomUUID: string = MiscUtil.newShortUUID()) => {
+	create: (roomUUID: string = uuidV4()) => {
 		send(
 			WssRoomRequest(ROOM_ACTION.CREATE, {
 				roomUUID,
