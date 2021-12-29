@@ -5,6 +5,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @NgModule({
 	declarations: [
@@ -15,6 +16,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 		MatCardModule,
 		MatInputModule,
 		MatButtonModule,
+		MatTooltipModule,
 		FormsModule,
 		ReactiveFormsModule
 	],

@@ -6,9 +6,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "server": "node src/server/main.js",
-    "prod:docker": "node ./server/main.js",
-    "hot-server": "nodemon src/server/main.js",
+    "server": "go run ./server",
     "build": "ng build",
     "build:prod": "ng build --prod",
     "build:prod:docker": "ng build --prod --output-path ./build",
