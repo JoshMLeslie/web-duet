@@ -1,6 +1,7 @@
 import { DOCUMENT } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
-import { BehaviorSubject, combineLatest, Subject } from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { WssResponse } from '../models/room';
@@ -18,7 +19,7 @@ export class WebsocketService {
 	room: ReturnType<typeof RoomUtil>;
 	user: ReturnType<typeof UserUtil>;
 	keyboard: ReturnType<typeof KeyboardUtil>;
-	
+
 	ready$ = new BehaviorSubject<boolean>(false);
 	sendData$ = new Subject<WebSocketData>();
 
@@ -43,20 +44,30 @@ export class WebsocketService {
 	version = environment.apiVersion;
 	websocketUrl = [
 		this.host.includes('localhost') ? 'ws://' : 'wss://',
-		this.host, ':',
-		this.port, "/",
-		this.version, '/ws'
-	].join();
+		this.host,
+		':',
+		this.port,
+		'/',
+		this.version,
+		'/ws/join'
+	].join('');
 
 	constructor(
 		private us: UuidService,
+		private http: HttpClient,
 		@Inject(DOCUMENT) private doc: Document
 	) {
 		if (window['WebSocket']) {
 			this.wsSetup();
 		} else {
-			alert('Please upgrade your browser. It must support WebSockets.')
+			alert('Please upgrade your browser. It must support WebSockets.');
 		}
+	}
+
+	join(roomId?: string): Observable<{ roomExists: boolean; roomId: string }> {
+		return this.http.post<{ roomExists: boolean; roomId: string }>('/ws/join', {
+			roomId
+		});
 	}
 
 	send(data: Object) {
@@ -86,12 +97,9 @@ export class WebsocketService {
 			this.room = RoomUtil(this.send.bind(this), uuid);
 			this.user = UserUtil(this.send.bind(this), uuid);
 			this.keyboard = KeyboardUtil(this.send.bind(this), uuid);
-		})
+		});
 
-		combineLatest([
-			this.ready$,
-			this.sendData$
-		]).subscribe(([ready, data]) => {
+		combineLatest([this.ready$, this.sendData$]).subscribe(([ready, data]) => {
 			if (ready) {
 				this.ws.send(data);
 			} else {

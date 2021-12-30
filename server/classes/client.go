@@ -13,8 +13,8 @@ import (
 
 // Client is a middleman between the websocket connection and the room.
 type Client struct {
-	id   string
-	room *Room
+	Id   string
+	Room *Room
 	conn *websocket.Conn
 	// Buffered channel of outbound messages.
 	send chan []byte
@@ -22,13 +22,17 @@ type Client struct {
 
 func NewClient(room *Room, conn *websocket.Conn) *Client {
 	c := &Client{
-		id:   uuid.NewString(),
-		room: room,
+		Id:   uuid.NewString(),
+		Room: room,
 		conn: conn,
 		send: make(chan []byte, 256),
 	}
-	c.room.register(c)
+	c.joinRoom(room)
 	return c
+}
+
+func (c *Client) joinRoom(room *Room) {
+	room.register(c)
 }
 
 // ReadPump pumps messages from the websocket connection to the room.
@@ -38,7 +42,7 @@ func NewClient(room *Room, conn *websocket.Conn) *Client {
 // reads from this goroutine.
 func (c *Client) ReadPump() {
 	defer func() {
-		c.room.unregReq <- c
+		c.Room.unregReq <- c
 		c.conn.Close()
 	}()
 	c.conn.SetReadLimit(u.MaxMessageBytes)
@@ -59,7 +63,7 @@ func (c *Client) ReadPump() {
 			break
 		}
 		message = bytes.TrimSpace(bytes.Replace(message, u.Newline, u.Space, -1))
-		c.room.incMsg <- message
+		c.Room.incMsg <- message
 	}
 }
 

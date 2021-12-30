@@ -3,6 +3,7 @@ import { FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { WebRTCService } from '../../services/web-rtc.service';
 import { UuidService } from '../../services/uuid.service';
+import { WebsocketService } from 'src/app/services/websocket.service';
 
 @Component({
 	selector: 'app-matching',
@@ -10,28 +11,24 @@ import { UuidService } from '../../services/uuid.service';
 	styleUrls: ['./matching.component.less']
 })
 export class MatchingComponent {
-	readonly uuidControl = new FormControl(null, [
-		Validators.required,
-		Validators.minLength(10)
-	]);
+	readonly uuidControl = new FormControl(null, [Validators.required]);
 
 	constructor(
 		private router: Router,
 		private wRTC: WebRTCService,
-		private us: UuidService
+		private wss: WebsocketService,
 	) {}
 
-	createRoom() {
-		const uuid = this.cleanString(this.us.genUUID());
-		this.wRTC.connect(uuid);
-		this.router.navigate(['room', uuid]);
-	}
-
 	joinRoom() {
-		const uuid = this.cleanString(this.us.genUUID());
-		const remoteUuid = this.cleanString(this.uuidControl.value)
-		this.wRTC.connect(uuid, remoteUuid);
-		this.router.navigate(['room', remoteUuid]);
+		this.wss.join().subscribe(({roomExists, roomId}) => {
+			if (roomExists) {
+				console.log('todo?')
+				this.wRTC.connect(roomId);
+			} else {
+				this.wRTC.connect(roomId);
+			}
+			this.router.navigate(['room', roomId]);
+		});
 	}
 
 	joinRandom() {

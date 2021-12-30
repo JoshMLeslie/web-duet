@@ -1,4 +1,5 @@
 import { NgModule } from '@angular/core';
+import { HttpClientModule } from '@angular/common/http'
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { BrowserModule } from '@angular/platform-browser';
@@ -18,6 +19,7 @@ import { RoomModule } from './views/room/room.module';
 	imports: [
 		BrowserModule,
 		BrowserAnimationsModule,
+		HttpClientModule,
 		AppRoutingModule,
 		KeyboardModule,
 		RecorderModule,

@@ -10,7 +10,7 @@ const routes: Routes = [
 	},
 	{
 		path: '',
-		redirectTo: "join",
+		redirectTo: 'join',
 		pathMatch: 'full'
 	},
 	{

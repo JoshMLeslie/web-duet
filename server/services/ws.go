@@ -14,20 +14,32 @@ var upgrader = websocket.Upgrader{
 }
 
 type Rooms map[string]*c.Room
+type Clients map[string]*c.Client
+
+type JoinReturn struct {
+	roomExists bool
+	roomId     string
+}
 
 var rooms = make(Rooms)
+var clients = make(Clients)
 
-func WsHandler(ctx *gin.Context) {
+func WsJoinHandler(ctx *gin.Context) {
 	conn, err := upgrader.Upgrade(ctx.Writer, ctx.Request, nil)
-	query, joinRoom := ctx.GetQuery("roomId")
+	query, joinRoom := ctx.GetPostForm("roomId")
 	var client *c.Client
 
 	if err != nil {
 		log.Println("Could not establish ws conn", err)
+		ctx.JSON(200, &JoinReturn{
+			roomExists: false,
+			roomId:     "",
+		})
 		return
 	}
 
-	if room, hasRoom := rooms[query]; joinRoom && hasRoom {
+	room, roomExists := rooms[query]
+	if joinRoom && roomExists {
 		client = c.NewClient(room, conn)
 	} else {
 		room := c.NewRoom()
@@ -37,4 +49,9 @@ func WsHandler(ctx *gin.Context) {
 
 	go client.WritePump()
 	go client.ReadPump()
+	clients[client.Id] = client
+	ctx.JSON(200, &JoinReturn{
+		roomExists: roomExists,
+		roomId:     client.Room.Id,
+	})
 }

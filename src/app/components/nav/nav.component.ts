@@ -21,7 +21,8 @@ export class NavComponent implements OnInit {
 		this.roomUUID$ = this.router.events.pipe(
 			filter(event => event instanceof NavigationEnd),
 			map((event: NavigationEnd) =>  {
-				return event.urlAfterRedirects.split('/').pop();
+				const roomId = event.urlAfterRedirects.split('/').pop();
+				return roomId && /(.{4,12}-+){4}/.test(roomId) ? roomId : '';
 			})
 		);
 	}
