@@ -14,7 +14,7 @@ const routes: Routes = [
 		pathMatch: 'full'
 	},
 	{
-		path: '**',
+		path: 'room/:roomId',
 		component: RoomComponent
 	}
 ];

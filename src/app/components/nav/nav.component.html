@@ -1,6 +1,6 @@
 <div id="nav-container">
 	<ng-container *ngIf="roomUUID$ | async as roomUUID">
-		<button *ngIf="buttonDisabled$ | async" id="nav-left"
+		<button id="nav-left"
 			(click)="copyConfirm()"
 			[cdkCopyToClipboard]="roomUUID">
 			<span>Current room:<br/>{{roomUUID}}</span>

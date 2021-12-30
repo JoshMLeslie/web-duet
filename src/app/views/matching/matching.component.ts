@@ -24,14 +24,14 @@ export class MatchingComponent {
 	createRoom() {
 		const uuid = this.cleanString(this.us.genUUID());
 		this.wRTC.connect(uuid);
-		this.router.navigate([uuid]);
+		this.router.navigate(['room', uuid]);
 	}
 
 	joinRoom() {
 		const uuid = this.cleanString(this.us.genUUID());
 		const remoteUuid = this.cleanString(this.uuidControl.value)
 		this.wRTC.connect(uuid, remoteUuid);
-		this.router.navigate([remoteUuid]);
+		this.router.navigate(['room', remoteUuid]);
 	}
 
 	joinRandom() {
