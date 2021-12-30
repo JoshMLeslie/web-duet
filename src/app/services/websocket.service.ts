@@ -2,6 +2,7 @@ import { DOCUMENT } from '@angular/common';
 import { Inject, Injectable } from '@angular/core';
 import { BehaviorSubject, combineLatest, Subject } from 'rxjs';
 import { map, take } from 'rxjs/operators';
+import { environment } from 'src/environments/environment';
 import { WssResponse } from '../models/room';
 import { KeyboardUtil, RoomUtil, UserUtil } from '../util/websocket.util';
 import { UuidService } from './uuid.service';
@@ -21,8 +22,8 @@ export class WebsocketService {
 	ready$ = new BehaviorSubject<boolean>(false);
 	sendData$ = new Subject<WebSocketData>();
 
-	private _recieveData$ = new Subject<WssResponse>();
-	recieveData$ = this._recieveData$.asObservable().pipe(
+	private _receiveData$ = new Subject<WssResponse>();
+	receiveData$ = this._receiveData$.asObservable().pipe(
 		map(res => {
 			if (typeof res === 'string') {
 				try {
@@ -38,14 +39,24 @@ export class WebsocketService {
 
 	ws: WebSocket;
 	host = this.doc.location.hostname;
-	local = !this.host.includes('localhost');
-	port = '8080';
+	port = environment.apiPort;
+	version = environment.apiVersion;
+	websocketUrl = [
+		this.host.includes('localhost') ? 'ws://' : 'wss://',
+		this.host, ':',
+		this.port, "/",
+		this.version, '/ws'
+	].join();
 
 	constructor(
 		private us: UuidService,
 		@Inject(DOCUMENT) private doc: Document
 	) {
-		this.wsSetup();
+		if (window['WebSocket']) {
+			this.wsSetup();
+		} else {
+			alert('Please upgrade your browser. It must support WebSockets.')
+		}
 	}
 
 	send(data: Object) {
@@ -57,8 +68,7 @@ export class WebsocketService {
 			this.ws.close();
 		}
 
-		const websocketUrl = (this.local ? 'wss://' : 'ws://') + this.host + ':' + this.port;
-		this.ws = new WebSocket(websocketUrl);
+		this.ws = new WebSocket(this.websocketUrl);
 		this.ws.onopen = () => {
 			console.log('client connection opened');
 			this.ready$.next(true);
@@ -66,7 +76,7 @@ export class WebsocketService {
 		this.ws.onmessage = message => {
 			const { data } = message;
 			console.log('incoming:', data);
-			this._recieveData$.next(data);
+			this._receiveData$.next(data);
 		};
 		this.ws.onclose = () => {
 			this.ws = null;

@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	r "github.com/joshmleslie/web-duet/server/routes"
 )
 
 func start(server *http.Server) {
@@ -21,7 +22,7 @@ func StartServer() *http.Server {
 		Handler: router,
 	}
 
-	SetRoutes(router)
+	r.SetRoutes(router)
 
 	// Start server in a goroutine so it won't block shutdown handling
 	go start(server)

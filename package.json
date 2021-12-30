@@ -4,9 +4,8 @@
   "author": "Josh Leslie",
   "homepage": "/",
   "scripts": {
-    "ng": "ng",
-    "start": "ng serve",
-    "server": "go run ./server",
+    "start": "ng build --output-path dist --watch",
+    "server": "air",
     "build": "ng build",
     "build:prod": "ng build --prod",
     "build:prod:docker": "ng build --prod --output-path ./build",

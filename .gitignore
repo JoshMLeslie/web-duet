@@ -6,6 +6,8 @@
 /out-tsc
 # Only exists if Bazel was run
 /bazel-out
+# Only exists if Air was run
+/server/tmp
 
 # dependencies
 /node_modules
