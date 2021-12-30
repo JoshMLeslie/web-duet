@@ -15,12 +15,10 @@ var upgrader = websocket.Upgrader{
 
 type Rooms map[string]*c.Room
 
-var rooms Rooms = make(map[string]*c.Room)
+var rooms = make(Rooms)
 
 func WsHandler(ctx *gin.Context) {
-	w := ctx.Writer
-	r := ctx.Request
-	conn, err := upgrader.Upgrade(w, r, nil)
+	conn, err := upgrader.Upgrade(ctx.Writer, ctx.Request, nil)
 	query, joinRoom := ctx.GetQuery("roomId")
 	var client *c.Client
 
@@ -29,12 +27,8 @@ func WsHandler(ctx *gin.Context) {
 		return
 	}
 
-	if joinRoom {
-		if room, hasRoom := rooms[query]; hasRoom {
-			client = c.NewClient(room, conn)
-		} else {
-			log.Println("TODO: tried to join missing room")
-		}
+	if room, hasRoom := rooms[query]; joinRoom && hasRoom {
+		client = c.NewClient(room, conn)
 	} else {
 		room := c.NewRoom()
 		rooms[room.Id] = room

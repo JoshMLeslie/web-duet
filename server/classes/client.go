@@ -11,7 +11,7 @@ import (
 	u "github.com/joshmleslie/web-duet/server/util"
 )
 
-// Client is a middleman between the websocket connection and the hub.
+// Client is a middleman between the websocket connection and the room.
 type Client struct {
 	id   string
 	room *Room
@@ -31,7 +31,7 @@ func NewClient(room *Room, conn *websocket.Conn) *Client {
 	return c
 }
 
-// ReadPump pumps messages from the websocket connection to the hub.
+// ReadPump pumps messages from the websocket connection to the room.
 //
 // The application runs ReadPump in a per-connection goroutine. The application
 // ensures that there is at most one reader on a connection by executing all
@@ -63,7 +63,7 @@ func (c *Client) ReadPump() {
 	}
 }
 
-// WritePump pumps messages from the hub to the websocket connection.
+// WritePump pumps messages from the room to the websocket connection.
 //
 // A goroutine running WritePump is started for each connection. The
 // application ensures that there is at most one writer to a connection by
@@ -79,7 +79,7 @@ func (c *Client) WritePump() {
 		case message, ok := <-c.send:
 			c.conn.SetWriteDeadline(time.Now().Add(u.WriteTimeMax))
 			if !ok {
-				// The hub closed the channel.
+				// The room closed the channel.
 				c.conn.WriteMessage(websocket.CloseMessage, []byte{})
 				return
 			}
